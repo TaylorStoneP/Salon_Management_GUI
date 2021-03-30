@@ -94,7 +94,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>wxUSE_BUTTON;wxUSE_GRAPHICS_CONTEXT;_CRT_SECURE_NO_WARNINGS;wxUSE_MSGDLG;wxUSE_STATUSBAR;wxUSE_MENUBAR;wxUSE_MENUS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>wxUSE_CALENDARCTRL;wxUSE_BUTTON;wxUSE_GRAPHICS_CONTEXT;_CRT_SECURE_NO_WARNINGS;wxUSE_MSGDLG;wxUSE_STATUSBAR;wxUSE_MENUBAR;wxUSE_MENUS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(wx)include;$(wx)include\msvc;$(personal)include</AdditionalIncludeDirectories>
     </ClCompile>
@@ -110,7 +110,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>wxUSE_BUTTON;wxUSE_GRAPHICS_CONTEXT;_CRT_SECURE_NO_WARNINGS;wxUSE_MSGDLG;wxUSE_STATUSBAR;wxUSE_MENUBAR;wxUSE_MENUS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>wxUSE_CALENDARCTRL;wxUSE_BUTTON;wxUSE_GRAPHICS_CONTEXT;_CRT_SECURE_NO_WARNINGS;wxUSE_MSGDLG;wxUSE_STATUSBAR;wxUSE_MENUBAR;wxUSE_MENUS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(wx)include;$(wx)include\msvc;$(personal)include</AdditionalIncludeDirectories>
     </ClCompile>
