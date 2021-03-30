@@ -152,6 +152,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\basePanel.cpp" />
+    <ClCompile Include="src\booking.cpp" />
+    <ClCompile Include="src\datetime.cpp" />
+    <ClCompile Include="src\file_management.cpp" />
     <ClCompile Include="src\personal\colourquad.cpp" />
     <ClCompile Include="src\personal\colour_ramp.cpp" />
     <ClCompile Include="src\CustomSetup.cpp" />
@@ -160,21 +163,29 @@
     <ClCompile Include="src\personal\noise.cpp" />
     <ClCompile Include="src\personal\random.cpp" />
     <ClCompile Include="src\personal\vector.cpp" />
+    <ClCompile Include="src\Staff.cpp" />
     <ClCompile Include="src\wxRelPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\basePanel.h" />
+    <ClInclude Include="include\booking.h" />
     <ClInclude Include="include\colourquad.h" />
     <ClInclude Include="include\colour_ramp.h" />
     <ClInclude Include="include\CustomSetup.h" />
+    <ClInclude Include="include\datetime.h" />
     <ClInclude Include="include\debuglogger.h" />
     <ClInclude Include="include\extraColours.h" />
+    <ClInclude Include="include\file_management.h" />
     <ClInclude Include="include\llist.h" />
     <ClInclude Include="include\MatrixRevision.h" />
     <ClInclude Include="include\noise.h" />
     <ClInclude Include="include\random.h" />
+    <ClInclude Include="include\Staff.h" />
     <ClInclude Include="include\vector.h" />
     <ClInclude Include="include\wxRelPanel.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="extraPaths.props" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -10,10 +10,10 @@
 
 bool MyApp::OnInit()
 {
-    MyFrame* frame = new MyFrame(this);
+    Main_Event_Window* frame = new Main_Event_Window(this);
     frame->Show(true);
 
-    LOG_PRINT_LINE("Hello");
+    //LOG_PRINT_LINE("Hello");
 
     return true;
 }

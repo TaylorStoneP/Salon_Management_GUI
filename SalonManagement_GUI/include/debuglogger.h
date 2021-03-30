@@ -295,6 +295,10 @@ public:
 		{
 			instance = new CONSOLE();
 		}
+		else if (instance->logWin->box == nullptr)
+		{
+			instance = new CONSOLE();
+		}
 		return instance;
 	}
 	static void log(std::string string, const tpCOLOURTYPE& fg_colour = tp_colour_misc::white, const tpCOLOURTYPE& bg_colour = tp_colour_menus::menu_black)

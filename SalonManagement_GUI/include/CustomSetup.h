@@ -1,5 +1,7 @@
 #pragma once
 #include <wx/window.h>
+class sm_row_array_pane;
+class ScrolledWidgetsPane;
 class MyApp : public wxApp
 {
 private:
@@ -13,17 +15,24 @@ public:
     int Height();
 };
 
-class MyFrame : public wxFrame
+class Main_Event_Window : public wxFrame
 {
+    static Main_Event_Window* m_instance;
 public:
-    MyFrame(MyApp* app);
-private:
+    ScrolledWidgetsPane* main_scroller;
+    wxWindow* main_win;
+    Main_Event_Window(MyApp* app);
+    //Can only be called once there is a main window.
+    static Main_Event_Window* get();
     void OnHello(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnEDIT_FLIP(wxCommandEvent& event);
     void OnEDIT_MOVE(wxCommandEvent& event);
     void OnEDIT_FILTERS(wxCommandEvent& event);
+
+    void add_row(wxCommandEvent& event);
+    void remove_row(wxCommandEvent& event);
 };
 
 class SubFrame : public wxFrame
@@ -34,5 +43,5 @@ public:
 
 enum
 {
-    ID_Hello = 1, ID_EDIT_FLIP, ID_EDIT_MOVE, ID_EDIT_FILTERS
+    ID_Hello = 1, ID_EDIT_FLIP, ID_EDIT_MOVE, ID_EDIT_FILTERS, ADD
 };
