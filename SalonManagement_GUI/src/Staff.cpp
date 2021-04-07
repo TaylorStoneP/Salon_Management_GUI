@@ -1,5 +1,9 @@
 #include "Staff.h"
 working_period::working_period(week_day day, DateTime start, DateTime finish):m_day(day),m_start(start),m_finish(finish){}
+working_period::working_period(DateTime start, int duration) : m_day((week_day)(start.to_tm()->tm_wday == 0 ? 6 : start.to_tm()->tm_wday - 1)), m_start(start), m_finish(start)
+{
+	m_finish.setHour(start.getHour() + duration);
+}
 working_period::~working_period() {}
 
 Staff::Staff(	std::string				name,
@@ -98,4 +102,48 @@ std::string to_string(week_day day)
 	default:
 		return "Error day";
 	}
+}
+
+void Staff::CheckBooking(Booking& booking)
+{
+
+	DateTime booking_time = booking.getMtimeSlot();
+	int booking_h_start = booking_time.getHour();
+
+	int staff_beggining = -1;
+	//int staff_beggining = staff.getHours()[0].m_start.getHour();
+	if (m_regular_hours)
+	{
+		staff_beggining = getHours()[booking_time.to_tm()->tm_wday == 0 ? 6 : booking_time.to_tm()->tm_wday - 1].m_start.getHour();
+	}
+	else
+	{
+		for (int i = 0; i < getHours().count(); i++)
+		{
+			if (getHours()[i].m_start.getYear() == booking_time.getYear() && getHours()[i].m_start.getMonth() == booking_time.getMonth() && getHours()[i].m_start.getDay() == booking_time.getDay())
+			{
+				staff_beggining = getHours()[i].m_start.getHour();
+				break;
+			}
+			else
+			{
+				staff_beggining = -1;
+			}
+		}
+	}
+
+
+	if (booking_h_start >= staff_beggining && staff_beggining != -1)
+	{
+		addBooking(booking);
+	}
+	else
+	{
+		LOG_LINE("The service provider does not work during this time");
+	}
+
+	/*void Staff::addBooking(Booking & booking) {
+		booking.setMstaff(this);
+		m_bookings.add_back(booking);
+	}*/
 }

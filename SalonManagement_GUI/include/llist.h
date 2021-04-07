@@ -62,6 +62,13 @@ public:
 			add_back();
 		}
 	}
+	llist(const llist<sub_type>& copy) :m_count(0), m_head(nullptr), m_end(nullptr)
+	{
+		for (int i = 0; i < copy.count(); i++)
+		{
+			add_back(copy[i]);
+		}
+	}
 	~llist() 
 	{
 		llist_node* cur = m_head;

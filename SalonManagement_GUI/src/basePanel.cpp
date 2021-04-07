@@ -7,8 +7,10 @@
 #endif
 #include <wx/msgdlg.h>
 #include <wx/button.h>
-#include <basePanel.h>
+#include <wx/calctrl.h>
 #include "random.h"
+#include <basePanel.h>
+#include "data_handler.h"
 sm_BasePanel::sm_BasePanel(wxWindow* window, wxSize size, wxColour colour, int style) : wxWindow(window,wxID_ANY,wxDefaultPosition,size,style)
 {
 	this->SetBackgroundColour(colour);
@@ -90,8 +92,9 @@ void sm_row_array_pane::remove_widget(int index)
 	this->Layout();
 }
 
-sm_StaffBookingPanel::sm_StaffBookingPanel(wxWindow* parent):sm_BasePanel(parent,wxSize(parent->GetClientSize().GetX(),50)),staff(nullptr)
+sm_StaffBookingPanel::sm_StaffBookingPanel(wxWindow* parent, int staff_index):sm_BasePanel(parent,wxSize(parent->GetClientSize().GetX(),50)),staff(nullptr)
 {
+	Staff& staff_in = data_handler::Get_Staff()[staff_index];
 	this->Hide();
 	wxBoxSizer* hori_sizer = new wxBoxSizer(wxHORIZONTAL);
 	this->SetSizer(hori_sizer);
@@ -103,7 +106,7 @@ sm_StaffBookingPanel::sm_StaffBookingPanel(wxWindow* parent):sm_BasePanel(parent
 	hori_sizer->Add(staff_box, 1, wxALL | wxEXPAND);
 	wxBoxSizer* box_filler = new wxBoxSizer(wxHORIZONTAL);
 	staff_box->SetSizer(box_filler);
-	wxTextCtrl* staff_text = new wxTextCtrl(staff_box,wxID_ANY,"name",wxDefaultPosition,wxDefaultSize, wxTE_CENTRE| wxTE_READONLY| wxTE_MULTILINE| wxTE_NO_VSCROLL);
+	wxTextCtrl* staff_text = new wxTextCtrl(staff_box,wxID_ANY,staff_in.m_name,wxDefaultPosition,wxDefaultSize, wxTE_CENTRE| wxTE_READONLY| wxTE_MULTILINE| wxTE_NO_VSCROLL);
 	box_filler->Add(staff_text,1, wxALL | wxEXPAND);
 	//total_width += unit_width * 1.5f;
 	

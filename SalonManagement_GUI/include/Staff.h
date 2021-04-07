@@ -26,6 +26,7 @@ struct working_period
 	DateTime m_start;
 	DateTime m_finish;
 	working_period(week_day m_day = week_day::sunday, DateTime start = DateTime(), DateTime finish = DateTime());
+	working_period(DateTime start, int duration);
 	~working_period();
 };
 
@@ -35,8 +36,9 @@ class Staff
 	llist<service*>			m_services;	//stores list of pointers to services practiced
 	llist<Booking>			m_bookings;	//stores all bookings for staff
 	llist<working_period>	m_hours;	//stores all bookings for staff
+
 	//bookings setter
-	void			addBooking(Booking& booking);
+
 public:
 	std::string		m_name;
 	std::string		m_phone;
@@ -45,20 +47,22 @@ public:
 	float			m_rate;
 
 	//constructor - takes in various pieces of information for staff member with defaults
-	Staff(		std::string		name = "unknown",
-				std::string		phone = "unknown", 
-				bool			regular_hours = true, 
-				bool			fixed_fee = false, 
-				float			rate = -1.0f, 
-				llist<service*> services = llist<service*>(), 
-				llist<Booking>	bookings = llist<Booking>(),
-				llist<working_period> hours = llist<working_period>());
+	Staff(std::string		name = "unknown",
+		std::string		phone = "unknown",
+		bool			regular_hours = true,
+		bool			fixed_fee = false,
+		float			rate = -1.0f,
+		llist<service*> services = llist<service*>(),
+		llist<Booking>	bookings = llist<Booking>(),
+		llist<working_period> hours = llist<working_period>());
 	//destructor
 	~Staff();
 
 	//returns staff member in string format
 	std::string To_String();
 	std::string Hours_To_String();
+
+	int getStartWorking_Hours();
 
 	//services getter
 	llist<service*> getServices();
@@ -71,8 +75,14 @@ public:
 	void			addServices(llist<service*> data);
 
 	//bookings getter
-	llist<Booking>&	getBookings();
+	llist<Booking>& getBookings();
 
+	//bookings setter
+	void			CheckBooking(Booking& booking);
+	void			addBooking(Booking& booking);
+
+	//bookings setter
+	//void			addBooking(Booking& booking);
 
 	//hours getter
 	llist<working_period> getHours();

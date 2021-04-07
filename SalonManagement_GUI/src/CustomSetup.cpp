@@ -12,6 +12,7 @@
 #include <wx/msgdlg.h>
 #include <wx/button.h>
 #include <extraColours.h>
+#include "data_handler.h"
 
 wxSize MyApp::WinSize()
 {
@@ -103,7 +104,20 @@ Main_Event_Window::Main_Event_Window(MyApp* app) : wxFrame(NULL, wxID_ANY, "Hell
 void Main_Event_Window::add_row(wxCommandEvent& event)
 {
     
-    main_scroller->add_widget(new sm_StaffBookingPanel(main_scroller));
+    llist<service*> services1;
+    services1.add_back(&data_handler::Get_Services()[0]);
+    services1.add_back(&data_handler::Get_Services()[3]);
+    services1.add_back(&data_handler::Get_Services()[4]);
+
+    Staff staff1("Magdalena Olejko", "07848484848", false, true, 10, services1);
+    Booking booking1("Taylor Phillips", "07575733228", nullptr, services1, DateTime(2021, 3, 15, 15, 0), false, false);
+    Booking booking2("Someone Else", "07575733228", nullptr, services1, DateTime(2021, 3, 15, 18, 0), false, false);
+    staff1.addHour(working_period(DateTime(2021, 3, 15, 9, 0), 10));
+    staff1.CheckBooking(booking1);
+    staff1.CheckBooking(booking2);
+    data_handler::Add_Staff(staff1);
+    
+    main_scroller->add_widget(new sm_StaffBookingPanel(main_scroller, data_handler::Get_Staff().count() - 1));
     //unit->Show(true);
 }
 void Main_Event_Window::remove_row(wxCommandEvent& event)

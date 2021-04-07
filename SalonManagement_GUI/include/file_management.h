@@ -8,6 +8,10 @@
 #include <sstream>
 void ReadAllDel(std::ifstream& stream, llist<std::string>& return_string, char delimiter);
 void ReadAllDel(std::stringstream& stream, llist<std::string>& return_string, char delimiter);
-void ReadStaffMembers(llist<Staff>& allStaff, llist<service>& allServices, llist<Booking*>& bookings);
-
+void ReadStaffMembers(llist<Staff>& allStaff, llist<service>& allServices);
+Booking BookingFromDataString(std::string string, llist<service>& allServices);
+std::string DataStringFromBooking(Booking& booking_mem);
+std::string DataStringFromStaff(Staff& staff_mem);
+Staff StaffFromDataString(std::string string, llist<service>& allServices);
+void SaveStaffMembers(llist<Staff>& allStaff);
 #endif

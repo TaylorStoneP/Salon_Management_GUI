@@ -3,6 +3,7 @@
 #include "Staff.h"
 #include "llist.h"
 #include "CustomSetup.h"
+#include <wx/calctrl.h>
 class sm_BasePanel : public wxWindow
 {
 public:
@@ -65,7 +66,7 @@ class sm_StaffBookingPanel : public sm_BasePanel
     DateTime current_date;
 
 public:
-	sm_StaffBookingPanel(wxWindow* parent);
+	sm_StaffBookingPanel(wxWindow* parent, int staff_index);
 };
 
 class sm_DateTimeBox : public SubFrame
