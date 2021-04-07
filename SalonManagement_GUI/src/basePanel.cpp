@@ -139,3 +139,207 @@ sm_StaffBookingPanel::sm_StaffBookingPanel(wxWindow* parent):sm_BasePanel(parent
 
 	this->Show();
 }
+
+sm_DateTimeBox::sm_DateTimeBox() : SubFrame(Main_Event_Window::get(), 300, 300, tp_colour_menus::menu_black), date(nullptr)
+{
+	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+	calendar = new wxCalendarCtrl(this, wxID_ANY);
+	wxArrayString myChoicesHour;
+	for (int i = 0; i < 24; i++)
+	{
+		myChoicesHour.Add(std::to_string(i)); // populate the array
+	}
+	wxArrayString myChoicesMinSec;
+	for (int i = 0; i < 60; i++)
+	{
+		myChoicesMinSec.Add(std::to_string(i)); // populate the array
+	}
+	sm_BasePanel* hour_slot_panel = new sm_BasePanel(this,wxSize(-1,30),tp_colour_menus::menu_black);
+	wxBoxSizer* hour_sizer = new wxBoxSizer(wxHORIZONTAL);
+	hour_slot_panel->SetSizer(hour_sizer);
+	sm_BasePanel* hour_slot = new sm_BasePanel(hour_slot_panel,wxSize(-1,-1));
+	wxBoxSizer* hour_slot_sizer = new wxBoxSizer(wxHORIZONTAL);
+	hour_slot->SetSizer(hour_slot_sizer);
+	hour = new wxChoice(hour_slot, wxID_ANY,wxDefaultPosition, wxDefaultSize, myChoicesHour, 0);
+	hour->SetSelection(0);
+	minute = new wxChoice(hour_slot, wxID_ANY,wxDefaultPosition, wxDefaultSize, myChoicesMinSec, 0);
+	minute->SetSelection(0);
+	second = new wxChoice(hour_slot, wxID_ANY,wxDefaultPosition, wxDefaultSize, myChoicesMinSec, 0);
+	second->SetSelection(0);
+	hour_slot_sizer->Add(hour, 1, wxALL | wxEXPAND);
+	hour_slot_sizer->Add(minute, 1, wxALL | wxEXPAND);
+	hour_slot_sizer->Add(second, 1, wxALL | wxEXPAND);
+	hour_sizer->Add(hour_slot, 1, wxALL | wxEXPAND);
+	finish = new sm_Button(this, &sm_DateTimeBox::SetDate, this, wxSize(-1, 40), "Done");
+	sizer->Add(calendar, 1, wxALL | wxEXPAND);
+	sizer->Add(hour_slot_panel, 1, wxALL | wxEXPAND);
+	sizer->Add(finish, 1, wxALL | wxEXPAND);
+	SetSizer(sizer);
+	this->Show(true);
+}
+void sm_DateTimeBox::Extra(){ LOG_TRACE("Extra() not overridden"); }
+void sm_DateTimeBox::SetDate(wxCommandEvent& event)
+{
+	int year = calendar->GetDate().GetYear();
+	int month = calendar->GetDate().GetMonth();
+	int day = calendar->GetDate().GetDay();
+	*date = DateTime(year, month, day, hour->GetSelection(), minute->GetSelection());
+	Extra();
+	this->Close();
+}
+
+void sm_NewBooking::add_service_to_list(wxCommandEvent& event)
+{
+	services->AppendText(service->GetStringSelection()+"\n");
+}
+void sm_NewBooking::get_date_picker(wxCommandEvent& event)
+{
+	sm_NewBooking_DateTimeBox::sm_GetDateTime<sm_NewBooking_DateTimeBox>(&datetime_val);
+}
+sm_NewBooking* sm_NewBooking::instance = nullptr;
+sm_NewBooking* sm_NewBooking::get()
+{
+	if (instance == nullptr)
+	{
+		instance = new sm_NewBooking();
+	}
+	return instance;
+}
+
+sm_NewBooking::sm_NewBooking(): SubFrame(Main_Event_Window::get(), 500, 300, tp_colour_menus::menu_black)
+{
+	instance = this;
+	name		= nullptr;
+	phone		= nullptr;
+	staff		= nullptr;
+	service		= nullptr;
+	services	= nullptr;
+	add_service	= nullptr;
+	datetime	= nullptr;
+	get_date	= nullptr;
+	finish		= nullptr;
+	wxBoxSizer* verti_sizer = new wxBoxSizer(wxVERTICAL);
+	SetSizer(verti_sizer);
+	sm_BasePanel* panel_main_top = new sm_BasePanel(this,wxSize(-1,50),tp_colour_misc::cyan);
+	sm_BasePanel* panel_main_bottom = new sm_BasePanel(this,wxSize(-1,-1),tp_colour_misc::grass_green);
+	sm_BasePanel* panel_main_fin = new sm_BasePanel(this,wxSize(-1,50),tp_colour_misc::deep_blue);
+	verti_sizer->Add(panel_main_top, 1, wxALL | wxEXPAND);
+	verti_sizer->Add(panel_main_bottom, 1, wxALL | wxEXPAND);
+	verti_sizer->Add(panel_main_fin, 1, wxALL | wxEXPAND);
+
+	//TOP PANEL WORKINGS
+	wxBoxSizer* panel_main_top_hori_sizer = new wxBoxSizer(wxHORIZONTAL);
+	panel_main_top->SetSizer(panel_main_top_hori_sizer);
+	sm_BasePanel* panel_main_top_name_box = new sm_BasePanel(panel_main_top, wxSize(-1, -1), tp_colour_misc::cyan);
+	sm_BasePanel* panel_main_top_phone_box = new sm_BasePanel(panel_main_top, wxSize(-1, -1), tp_colour_misc::grass_green);
+	sm_BasePanel* panel_main_top_staff_box = new sm_BasePanel(panel_main_top, wxSize(-1, -1), tp_colour_misc::orange);
+	panel_main_top_hori_sizer->Add(panel_main_top_name_box, 1, wxALL | wxEXPAND);
+	panel_main_top_hori_sizer->Add(panel_main_top_phone_box, 1, wxALL | wxEXPAND);
+	panel_main_top_hori_sizer->Add(panel_main_top_staff_box, 1, wxALL | wxEXPAND);
+	
+	//NAME
+	wxBoxSizer* panel_main_top_name_box_sizer = new wxBoxSizer(wxHORIZONTAL);
+	name = new wxTextCtrl(panel_main_top_name_box,wxID_ANY,"-Name");
+	panel_main_top_name_box->SetSizer(panel_main_top_name_box_sizer);
+	panel_main_top_name_box_sizer->Add(name, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//PHONE
+	wxBoxSizer* panel_main_top_phone_box_sizer = new wxBoxSizer(wxHORIZONTAL);
+	phone = new wxTextCtrl(panel_main_top_phone_box, wxID_ANY, "-Phone");
+	panel_main_top_phone_box->SetSizer(panel_main_top_phone_box_sizer);
+	panel_main_top_phone_box_sizer->Add(phone, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//STAFF
+	wxArrayString staffNames;
+
+	staffNames.Add("-Staff"); // populate the array
+	staffNames.Add("Bruce Wayne"); // populate the array
+	staffNames.Add("Clark Kent"); // populate the array
+	staffNames.Add("Peter Parker"); // populate the array
+	
+	wxBoxSizer* panel_main_top_staff_box_sizer = new wxBoxSizer(wxHORIZONTAL);
+	staff = new wxChoice(panel_main_top_staff_box, wxID_ANY, wxDefaultPosition, wxDefaultSize, staffNames, 0);
+	staff->SetSelection(0);
+	panel_main_top_staff_box->SetSizer(panel_main_top_staff_box_sizer);
+	panel_main_top_staff_box_sizer->Add(staff, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//BOTTOM PANEL WORKINGS
+	wxBoxSizer* panel_main_bottom_hori_sizer = new wxBoxSizer(wxHORIZONTAL);
+	panel_main_bottom->SetSizer(panel_main_bottom_hori_sizer);
+	sm_BasePanel* panel_main_bottom_service_box = new sm_BasePanel(panel_main_bottom, wxSize(-1, -1), tp_colour_misc::purple);
+	sm_BasePanel* panel_main_bottom_services_list_box = new sm_BasePanel(panel_main_bottom, wxSize(-1, -1), tp_colour_misc::red);
+	sm_BasePanel* panel_main_bottom_date_box = new sm_BasePanel(panel_main_bottom, wxSize(-1, -1), tp_colour_misc::yellow);
+	panel_main_bottom_hori_sizer->Add(panel_main_bottom_service_box, 1, wxALL | wxEXPAND);
+	panel_main_bottom_hori_sizer->Add(panel_main_bottom_services_list_box, 1, wxALL | wxEXPAND);
+	panel_main_bottom_hori_sizer->Add(panel_main_bottom_date_box, 1, wxALL | wxEXPAND);
+
+	//ALLSERVICES
+	wxBoxSizer* panel_main_bottom_service_box_sizer = new wxBoxSizer(wxVERTICAL);
+	panel_main_bottom_service_box->SetSizer(panel_main_bottom_service_box_sizer);
+	sm_BasePanel* panel_main_bottom_service_box_top = new sm_BasePanel(panel_main_bottom_service_box, wxSize(-1, 50), tp_colour_misc::purple);
+	sm_BasePanel* panel_main_bottom_service_box_bottom = new sm_BasePanel(panel_main_bottom_service_box, wxSize(-1, 50), tp_colour_misc::purple);
+	panel_main_bottom_service_box_sizer->Add(panel_main_bottom_service_box_top, 1, wxALL | wxEXPAND);
+	panel_main_bottom_service_box_sizer->Add(panel_main_bottom_service_box_bottom, 1, wxALL | wxEXPAND);
+	//SERVICE
+	wxArrayString serviceNames;
+
+	serviceNames.Add("-Service"); // populate the array
+	serviceNames.Add("Cut"); // populate the array
+	serviceNames.Add("Wash"); // populate the array
+	serviceNames.Add("Trim"); // populate the array
+	serviceNames.Add("Dye"); // populate the array
+
+	wxBoxSizer* panel_main_bottom_service_box_top_sizer = new wxBoxSizer(wxHORIZONTAL);
+	service = new wxChoice(panel_main_bottom_service_box_top, wxID_ANY, wxDefaultPosition, wxDefaultSize, serviceNames, 0);
+	service->SetSelection(0);
+	panel_main_bottom_service_box_top->SetSizer(panel_main_bottom_service_box_top_sizer);
+	panel_main_bottom_service_box_top_sizer->Add(service, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//ADDSERVICE
+	wxBoxSizer* panel_main_top_service_box_bottom_sizer = new wxBoxSizer(wxHORIZONTAL);
+	add_service = new sm_Button(panel_main_bottom_service_box_bottom,&sm_NewBooking::add_service_to_list,this,wxDefaultSize,"Add>>");
+	panel_main_bottom_service_box_bottom->SetSizer(panel_main_top_service_box_bottom_sizer);
+	panel_main_top_service_box_bottom_sizer->Add(add_service, 1, wxALL | wxEXPAND);
+	////////////////////
+	//SERVICESLISTBOX
+	wxBoxSizer* panel_main_bottom_services_list_box_sizer = new wxBoxSizer(wxHORIZONTAL);
+	services = new wxTextCtrl(panel_main_bottom_services_list_box, wxID_ANY, "", wxDefaultPosition,wxDefaultSize, wxTE_READONLY| wxTE_MULTILINE);
+	panel_main_bottom_services_list_box->SetSizer(panel_main_bottom_services_list_box_sizer);
+	panel_main_bottom_services_list_box_sizer->Add(services, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//DATESTART
+	wxBoxSizer* panel_main_bottom_date_box_sizer = new wxBoxSizer(wxVERTICAL);
+	panel_main_bottom_date_box->SetSizer(panel_main_bottom_date_box_sizer);
+	sm_BasePanel* panel_main_bottom_date_box_top = new sm_BasePanel(panel_main_bottom_date_box, wxSize(-1, 50), tp_colour_misc::purple);
+	sm_BasePanel* panel_main_bottom_date_box_bottom = new sm_BasePanel(panel_main_bottom_date_box, wxSize(-1, 50), tp_colour_misc::purple);
+	panel_main_bottom_date_box_sizer->Add(panel_main_bottom_date_box_top, 1, wxALL | wxEXPAND);
+	panel_main_bottom_date_box_sizer->Add(panel_main_bottom_date_box_bottom, 1, wxALL | wxEXPAND);
+	////////////////////
+	//DATESTRING
+	wxBoxSizer* panel_main_bottom_date_box_top_sizer = new wxBoxSizer(wxHORIZONTAL);
+	datetime = new wxTextCtrl(panel_main_bottom_date_box_top, wxID_ANY, "-Date & Time", wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+	panel_main_bottom_date_box_top->SetSizer(panel_main_bottom_date_box_top_sizer);
+	panel_main_bottom_date_box_top_sizer->Add(datetime, 1, wxALL | wxEXPAND);
+	////////////////////
+	//ADDSERVICE
+	wxBoxSizer* panel_main_bottom_date_box_bottom_sizer = new wxBoxSizer(wxHORIZONTAL);
+	get_date = new sm_Button(panel_main_bottom_date_box_bottom, &sm_NewBooking::get_date_picker, this, wxDefaultSize, "Get Timeslot");
+	panel_main_bottom_date_box_bottom->SetSizer(panel_main_bottom_date_box_bottom_sizer);
+	panel_main_bottom_date_box_bottom_sizer->Add(get_date, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//BOTTOM BUTTON
+	wxBoxSizer* panel_main_fin_sizer = new wxBoxSizer(wxHORIZONTAL);
+	finish = new sm_Button(panel_main_fin, &sm_NewBooking::get_date_picker, this, wxDefaultSize, "Add Booking");
+	panel_main_fin->SetSizer(panel_main_fin_sizer);
+	panel_main_fin_sizer->Add(finish, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	this->Show(true);
+}
+

@@ -22,14 +22,14 @@ public:
 class sm_Button : public wxButton
 {
 public:
-	//template<typename Class, typename EventArg>
-	sm_Button(wxWindow* window, void (Main_Event_Window::* method)(wxCommandEvent&), wxSize size = wxDefaultSize, wxString text = ""):wxButton(window,wxID_ANY,text)
+	template<typename Class, typename Handler>// typename EventArg>
+	sm_Button(wxWindow* window, void (Class::* method)(wxCommandEvent&), Handler handler, wxSize size = wxDefaultSize, wxString text = ""):wxButton(window,wxID_ANY,text)
 	{
 		if (size != wxDefaultSize) {
 			this->SetMaxSize(size);
 			this->SetMinSize(size);
 		}
-		Bind(wxEVT_BUTTON, method, Main_Event_Window::get());
+		Bind(wxEVT_BUTTON, method, handler);
 	}
 };
 
@@ -66,4 +66,59 @@ class sm_StaffBookingPanel : public sm_BasePanel
 
 public:
 	sm_StaffBookingPanel(wxWindow* parent);
+};
+
+class sm_DateTimeBox : public SubFrame
+{
+public:
+
+	wxCalendarCtrl* calendar;
+	wxChoice* hour;
+	wxChoice* minute;
+	wxChoice* second;
+	sm_Button* finish;
+	DateTime* date;
+	sm_DateTimeBox();
+	void SetDate(wxCommandEvent& event);
+	template <typename Class>
+	static void sm_GetDateTime(DateTime* date)
+	{
+		Class* form = new Class();
+		form->date = date;
+	}
+	virtual void Extra();
+};
+
+
+class sm_NewBooking : public SubFrame
+{
+	class sm_NewBooking_DateTimeBox : public sm_DateTimeBox
+	{
+	public:
+		void Extra() override
+		{
+			get()->datetime->Clear();
+			get()->datetime->AppendText(get()->datetime_val.To_String());
+		}
+
+	};
+
+	static sm_NewBooking* instance;
+	DateTime datetime_val;
+	void add_service_to_list(wxCommandEvent& event);
+	void get_date_picker(wxCommandEvent& event);
+public:
+	static sm_NewBooking* get();
+	wxTextCtrl*		name;
+	wxTextCtrl*		phone;
+	wxChoice*		staff;
+	wxChoice*		service;
+	wxTextCtrl*		services;
+	sm_Button*		add_service;
+	wxTextCtrl*		datetime;
+	sm_Button*		get_date;
+	sm_Button*		finish;
+
+	sm_NewBooking();
+	
 };

@@ -7,6 +7,9 @@
 #include <ctime>
 #include "debuglogger.h"
 #include <string>
+#include <wx/calctrl.h>
+class sm_Button;
+class SubFrame;
 class DateTime {
 	int m_year;
 	int m_month;
@@ -46,5 +49,7 @@ public:
     int getSecond() const;
 
 };
+
+
 
 #endif

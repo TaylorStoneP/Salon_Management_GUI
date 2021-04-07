@@ -74,8 +74,8 @@ Main_Event_Window::Main_Event_Window(MyApp* app) : wxFrame(NULL, wxID_ANY, "Hell
     
     
     wxBoxSizer* button_sizer = new wxBoxSizer(wxVERTICAL);
-    sm_Button* button_add = new sm_Button(left,&Main_Event_Window::add_row, wxSize(-1, 40),"Add");
-    sm_Button* button_remove = new sm_Button(left,&Main_Event_Window::remove_row, wxSize(-1, 40),"Remove");
+    sm_Button* button_add = new sm_Button(left,&Main_Event_Window::add_row, Main_Event_Window::get(),wxSize(-1, 40),"Add");
+    sm_Button* button_remove = new sm_Button(left,&Main_Event_Window::remove_row, Main_Event_Window::get(), wxSize(-1, 40),"Remove");
 
     button_sizer->Add(button_add, 1, wxALL | wxEXPAND);
     button_sizer->Add(button_remove, 1, wxALL | wxEXPAND);

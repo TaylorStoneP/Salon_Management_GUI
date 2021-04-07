@@ -1,11 +1,12 @@
 #include "datetime.h"
 #include <string>
 #include "debuglogger.h"
+#include "CustomSetup.h"
+#include "basePanel.h"
 DateTime::DateTime() :m_year(-1),m_month(-1),m_day(-1),m_hour(-1),m_minute(-1),m_second(-1) {}
-DateTime::DateTime(const int year, const int month, const int day, const int hour, const int minute, const int second) :m_year(year), m_month(month), m_day(day), m_hour(hour), m_minute(minute), m_second(second) { LOG_ALLOCATION("DateTime", this); }
+DateTime::DateTime(const int year, const int month, const int day, const int hour, const int minute, const int second) :m_year(year), m_month(month), m_day(day), m_hour(hour), m_minute(minute), m_second(second) {}
 DateTime::DateTime(const int year,const int month, const int day, const int hour, const int minute)
 {
-    LOG_ALLOCATION("DateTime", this);
     *this = Now();
     m_year = year;
     m_month = month;
@@ -17,7 +18,6 @@ DateTime::DateTime(const int year,const int month, const int day, const int hour
 }
 DateTime::DateTime(const int month, const int day, const int hour, const int minute)
 {
-    LOG_ALLOCATION("DateTime", this);
     *this = Now();
     m_month = month;
     m_day = day;
@@ -27,7 +27,6 @@ DateTime::DateTime(const int month, const int day, const int hour, const int min
 }
 DateTime::DateTime(const int day, const int hour, const int minute)
 {
-    LOG_ALLOCATION("DateTime", this);
     *this = Now();
     m_day = day;
     m_hour = hour;
@@ -36,7 +35,6 @@ DateTime::DateTime(const int day, const int hour, const int minute)
 }
 DateTime::DateTime(const int hour, const int minute)
 {
-    LOG_ALLOCATION("DateTime", this);
     *this = Now();
     m_hour = hour;
     m_minute = minute;
@@ -44,11 +42,10 @@ DateTime::DateTime(const int hour, const int minute)
 }
 DateTime::DateTime(const std::time_t& time)
 {
-    LOG_ALLOCATION("DateTime", this);
     *this = Time_T_to_DateTime(time);
 }
 
-DateTime::~DateTime() { LOG_DEALLOCATION("DateTime", this); }
+DateTime::~DateTime() {  }
 
 std::string DateTime::To_String() const
 {
@@ -103,4 +100,5 @@ int DateTime::getSecond() const
 {
     return m_second;
 }
+
 
