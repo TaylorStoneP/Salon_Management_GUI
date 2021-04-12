@@ -16,7 +16,7 @@ Booking::Booking(std::string name,
                  m_walkIn(walkIn), 
                  m_paid(paid) { LOG_ALLOCATION("Booking", this); }
 Booking::~Booking() { LOG_DEALLOCATION("Booking", this); }
-std::string Booking::To_String()
+std::string Booking::to_string()
 {
     std::string allServices = "";
     for (int i = 0; i < m_services.count(); i++) {
@@ -26,6 +26,15 @@ std::string Booking::To_String()
     }
     //returns name|phone|staff|HH:MM:SS DD/MM/YY|service1,service2,serviceN...|paid?|walk-in?
     return m_name+"|"+m_phone+"|"+m_staff->m_name+"|"+m_timeSlot.To_String()+"|"+allServices+"|"+(m_paid==true?"PAID":"UNPAID")+"|"+(m_walkIn==true?"WALK-IN":"BOOKING");
+}
+int Booking::FullServiceDuration()
+{
+    int total=0;
+    for (int i = 0; i < m_services.count(); i++)
+    {
+        total += m_services[i]->m_duration;
+    }
+    return total;
 }
 std::string Booking::getMname() const
 {

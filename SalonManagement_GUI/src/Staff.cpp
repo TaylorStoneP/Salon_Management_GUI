@@ -6,6 +6,11 @@ working_period::working_period(DateTime start, int duration) : m_day((week_day)(
 }
 working_period::~working_period() {}
 
+std::string working_period::To_String(bool regular)
+{
+	return to_string(m_day)+(regular?(""):(" "+m_start.To_String_Date()))+" Start: "+m_start.To_String_Time()+" Finish: "+m_finish.To_String_Time();
+}
+
 Staff::Staff(	std::string				name,
 				std::string				phone,
 				bool					regular_hours,
@@ -79,6 +84,21 @@ void Staff::addHour(working_period data) {
 		data.m_finish = DateTime(0, 0, 0, data.m_finish.getHour(), data.m_finish.getMinute(), 0);
 	}
 	m_hours.add_back(data);
+}
+
+llist<Booking*> Staff::GetBookingsDuring(DateTime start, DateTime finish)
+{
+	llist<Booking*> bookings_list;
+
+	for (int i = 0; i < m_bookings.count(); i++)
+	{
+		Booking* booking = &m_bookings[i];
+		if (booking->getMtimeSlot() >= start && booking->getMtimeSlot() <= finish)
+		{
+			bookings_list.add_back(booking);
+		}
+	}
+	return bookings_list;
 }
 
 std::string to_string(week_day day)

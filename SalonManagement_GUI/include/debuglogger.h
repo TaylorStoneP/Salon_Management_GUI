@@ -269,33 +269,30 @@ public:
 	}
 };
 
-class CONSOLE
+class CONSOLE : public wxTextWindow
 {
+	static bool created;
 	static CONSOLE* instance;
-	wxTextWindow* logWin;
-	CONSOLE()
+	CONSOLE() : wxTextWindow(NULL)
 	{
+		created = true;
 		instance = this;
-		logWin = new wxTextWindow(NULL);
-		logWin->box->SetBackgroundColour(tp_colour_menus::menu_black);
-		logWin->box->SetEditable(false);
-		logWin->Show(true);
+		box->SetBackgroundColour(tp_colour_menus::menu_black);
+		box->SetEditable(false);
+		Show(true);
 	}
 	void log_priv(std::string string, const tpCOLOURTYPE& fg_colour, const tpCOLOURTYPE& bg_colour)
 	{
-		instance->logWin->box->SetDefaultStyle(wxTextAttr(fg_colour, bg_colour));
-		instance->logWin->box->WriteText(string);
-		instance->logWin->box->SetDefaultStyle(wxTextAttr(tp_colour_misc::white, tp_colour_menus::menu_black));
+		instance->box->SetDefaultStyle(wxTextAttr(fg_colour, bg_colour));
+		instance->box->WriteText(string);
+		instance->box->SetDefaultStyle(wxTextAttr(tp_colour_misc::white, tp_colour_menus::menu_black));
 	}
+	~CONSOLE() { created = false; }
 public:
 
 	static CONSOLE* Get()
 	{
-		if (instance == nullptr)
-		{
-			instance = new CONSOLE();
-		}
-		else if (instance->logWin->box == nullptr)
+		if (created == false)
 		{
 			instance = new CONSOLE();
 		}

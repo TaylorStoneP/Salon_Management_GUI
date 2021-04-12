@@ -161,7 +161,6 @@
     <ClCompile Include="src\personal\debuglogger.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\personal\random.cpp" />
-    <ClCompile Include="src\personal\vector.cpp" />
     <ClCompile Include="src\Staff.cpp" />
     <ClCompile Include="src\wxRelPanel.cpp" />
   </ItemGroup>
@@ -178,7 +177,6 @@
     <ClInclude Include="include\llist.h" />
     <ClInclude Include="include\random.h" />
     <ClInclude Include="include\Staff.h" />
-    <ClInclude Include="include\vector.h" />
     <ClInclude Include="include\wxRelPanel.h" />
   </ItemGroup>
   <ItemGroup>

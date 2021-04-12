@@ -32,6 +32,11 @@ public:
 	static DateTime Now();
 	static DateTime Time_T_to_DateTime(const std::time_t& time);
 
+	bool operator>(DateTime& rhs);
+	bool operator<(DateTime& rhs);
+	bool operator>=(DateTime& rhs);
+	bool operator<=(DateTime& rhs);
+
 	time_t to_time_t();
 
 	tm* to_tm();
@@ -49,6 +54,9 @@ public:
 	int getSecond() const;
 
 	void setHour(int hour);
+	void setDay(int day);
+
+	int GetWeekDay();
 
 };
 

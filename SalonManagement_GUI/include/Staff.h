@@ -28,6 +28,8 @@ struct working_period
 	working_period(week_day m_day = week_day::sunday, DateTime start = DateTime(), DateTime finish = DateTime());
 	working_period(DateTime start, int duration);
 	~working_period();
+
+	std::string To_String(bool regular = false);
 };
 
 //Staff class
@@ -62,8 +64,6 @@ public:
 	std::string To_String();
 	std::string Hours_To_String();
 
-	int getStartWorking_Hours();
-
 	//services getter
 	llist<service*> getServices();
 	//services setter
@@ -91,6 +91,8 @@ public:
 
 	//adds hours to their schedule
 	void			addHour(working_period data);
+
+	llist<Booking*> GetBookingsDuring(DateTime start, DateTime finish);
 };
 
 #endif

@@ -14,15 +14,6 @@ bool MyApp::OnInit()
 {
     Main_Event_Window* frame = new Main_Event_Window(this);
     frame->Show(true);
-
-    sm_NewBooking* newB = sm_NewBooking::get();
-    //LOG_PRINT_LINE("Hello");
-	
-	data_handler::Add_Service(service("Cut", 30, 4.99));
-	data_handler::Add_Service(service("Wash", 60, 9.99));
-	data_handler::Add_Service(service("Dye", 90, 14.99));
-	data_handler::Add_Service(service("Trim", 10, 10));
-	data_handler::Add_Service(service("Perm", 40, 19.99));
 	
     return true;
 }

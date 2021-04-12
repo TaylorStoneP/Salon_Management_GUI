@@ -77,9 +77,15 @@ Main_Event_Window::Main_Event_Window(MyApp* app) : wxFrame(NULL, wxID_ANY, "Hell
     wxBoxSizer* button_sizer = new wxBoxSizer(wxVERTICAL);
     sm_Button* button_add = new sm_Button(left,&Main_Event_Window::add_row, Main_Event_Window::get(),wxSize(-1, 40),"Add");
     sm_Button* button_remove = new sm_Button(left,&Main_Event_Window::remove_row, Main_Event_Window::get(), wxSize(-1, 40),"Remove");
+    sm_Button* button_add_service = new sm_Button(left,&Main_Event_Window::add_service, Main_Event_Window::get(),wxSize(-1, 40),"Add Service");
+    sm_Button* button_add_staff = new sm_Button(left,&Main_Event_Window::add_staff, Main_Event_Window::get(),wxSize(-1, 40),"Add Staff");
+    sm_Button* button_add_booking = new sm_Button(left,&Main_Event_Window::add_booking, Main_Event_Window::get(),wxSize(-1, 40),"Add Booking");
 
     button_sizer->Add(button_add, 1, wxALL | wxEXPAND);
     button_sizer->Add(button_remove, 1, wxALL | wxEXPAND);
+    button_sizer->Add(button_add_service, 1, wxALL | wxEXPAND);
+    button_sizer->Add(button_add_staff, 1, wxALL | wxEXPAND);
+    button_sizer->Add(button_add_booking, 1, wxALL | wxEXPAND);
     left->SetSizer(button_sizer);
 
     wxBoxSizer* scrollSize = new wxBoxSizer(wxHORIZONTAL);
@@ -103,20 +109,6 @@ Main_Event_Window::Main_Event_Window(MyApp* app) : wxFrame(NULL, wxID_ANY, "Hell
 
 void Main_Event_Window::add_row(wxCommandEvent& event)
 {
-    
-    llist<service*> services1;
-    services1.add_back(&data_handler::Get_Services()[0]);
-    services1.add_back(&data_handler::Get_Services()[3]);
-    services1.add_back(&data_handler::Get_Services()[4]);
-
-    Staff staff1("Magdalena Olejko", "07848484848", false, true, 10, services1);
-    Booking booking1("Taylor Phillips", "07575733228", nullptr, services1, DateTime(2021, 3, 15, 15, 0), false, false);
-    Booking booking2("Someone Else", "07575733228", nullptr, services1, DateTime(2021, 3, 15, 18, 0), false, false);
-    staff1.addHour(working_period(DateTime(2021, 3, 15, 9, 0), 10));
-    staff1.CheckBooking(booking1);
-    staff1.CheckBooking(booking2);
-    data_handler::Add_Staff(staff1);
-    
     main_scroller->add_widget(new sm_StaffBookingPanel(main_scroller, data_handler::Get_Staff().count() - 1));
     //unit->Show(true);
 }
@@ -125,6 +117,18 @@ void Main_Event_Window::remove_row(wxCommandEvent& event)
     main_scroller->remove_widget(0);
 }
 
+void Main_Event_Window::add_booking(wxCommandEvent& event)
+{
+    sm_NewBooking* newB = sm_NewBooking::get();
+}
+void Main_Event_Window::add_service(wxCommandEvent& event)
+{
+    sm_NewService* newS = new sm_NewService();
+}
+void Main_Event_Window::add_staff(wxCommandEvent& event)
+{
+    sm_NewStaff* newS = new sm_NewStaff();
+}
 void Main_Event_Window::OnExit(wxCommandEvent& event)
 {
     Close(true);

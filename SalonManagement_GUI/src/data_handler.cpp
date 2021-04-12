@@ -25,6 +25,11 @@ llist<service>& data_handler::Get_Services()
 	return data_handler::Get()->allServices;
 }
 
+DateTime data_handler::Get_Selected_Date()
+{
+	return data_handler::Get()->selected_date;
+}
+
 void data_handler::Add_Staff(Staff& staff_in)
 {
 	llist<Staff>& allStaffRef = data_handler::Get()->Get_Staff();
@@ -41,8 +46,31 @@ void data_handler::Add_Service(service service_in)
 	allServicesRef.add_back(service_in);
 }
 
+service* data_handler::Get_Service_By_Name(std::string name)
+{
+	llist<service>& allServicesRef = data_handler::Get()->Get_Services();
+	for (int i = 0; i < allServicesRef.count(); i++)
+	{
+		if (name == allServicesRef[i].m_name)
+		{
+			return &(allServicesRef[i]);
+		}
+	}
+	return nullptr;
+}
+
 void data_handler::Add_Booking(int index_of_staff, Booking& booking_in)
 {
 	llist<Staff>& allStaffRef = data_handler::Get()->Get_Staff();
 	allStaffRef[index_of_staff].addBooking(booking_in);
+}
+
+void data_handler::Add_Queue(std::string in)
+{
+	data_handler::Get()->data_queue.add_back(in);
+}
+
+std::string data_handler::Pop_Queue()
+{
+	return data_handler::Get()->data_queue.pop_at(0);
 }

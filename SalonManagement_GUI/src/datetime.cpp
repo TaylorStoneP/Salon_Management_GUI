@@ -65,6 +65,131 @@ DateTime DateTime::Time_T_to_DateTime(const std::time_t& time)
     std::tm* localTime = std::localtime(&time);
     return { localTime->tm_year + 1900, localTime->tm_mon + 1, localTime->tm_mday, localTime->tm_hour, localTime->tm_min, localTime->tm_sec };
 }
+bool DateTime::operator>(DateTime& rhs)
+{
+    if (m_year > rhs.getYear())
+        return true;
+    else if (m_year == rhs.getYear())
+    {
+        if (m_month > rhs.getMonth())
+            return true;
+        else if (m_month == rhs.getMonth())
+        {
+            if (m_day > rhs.getDay())
+                return true;
+            else if (m_day == rhs.getDay())
+            {
+                if (m_hour > rhs.getHour())
+                    return true;
+                else if (m_hour == rhs.getHour())
+                {
+                    if (m_minute > rhs.getMinute())
+                        return true;
+                    else if (m_minute == rhs.getMinute())
+                    {
+                        if (m_second > rhs.getSecond())
+                            return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+bool DateTime::operator<(DateTime& rhs)
+{
+    if (m_year < rhs.getYear())
+        return true;
+    else if (m_year == rhs.getYear())
+    {
+        if (m_month < rhs.getMonth())
+            return true;
+        else if (m_month == rhs.getMonth())
+        {
+            if (m_day < rhs.getDay())
+                return true;
+            else if (m_day == rhs.getDay())
+            {
+                if (m_hour < rhs.getHour())
+                    return true;
+                else if (m_hour == rhs.getHour())
+                {
+                    if (m_minute < rhs.getMinute())
+                        return true;
+                    else if (m_minute == rhs.getMinute())
+                    {
+                        if (m_second < rhs.getSecond())
+                            return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool DateTime::operator>=(DateTime& rhs)
+{
+    if (m_year > rhs.getYear())
+        return true;
+    else if (m_year == rhs.getYear())
+    {
+        if (m_month > rhs.getMonth())
+            return true;
+        else if (m_month == rhs.getMonth())
+        {
+            if (m_day > rhs.getDay())
+                return true;
+            else if (m_day == rhs.getDay())
+            {
+                if (m_hour > rhs.getHour())
+                    return true;
+                else if (m_hour == rhs.getHour())
+                {
+                    if (m_minute > rhs.getMinute())
+                        return true;
+                    else if (m_minute == rhs.getMinute())
+                    {
+                        if (m_second >= rhs.getSecond())
+                            return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+bool DateTime::operator<=(DateTime& rhs)
+{
+    if (m_year < rhs.getYear())
+        return true;
+    else if (m_year == rhs.getYear())
+    {
+        if (m_month < rhs.getMonth())
+            return true;
+        else if (m_month == rhs.getMonth())
+        {
+            if (m_day < rhs.getDay())
+                return true;
+            else if (m_day == rhs.getDay())
+            {
+                if (m_hour < rhs.getHour())
+                    return true;
+                else if (m_hour == rhs.getHour())
+                {
+                    if (m_minute < rhs.getMinute())
+                        return true;
+                    else if (m_minute == rhs.getMinute())
+                    {
+                        if (m_second <= rhs.getSecond())
+                            return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
 time_t DateTime::to_time_t()
 {
     tm temp;
@@ -121,5 +246,15 @@ int DateTime::getSecond() const
 void DateTime::setHour(int hour)
 {
     m_hour = hour;
+}
+
+void DateTime::setDay(int day)
+{
+    m_day = day;
+}
+
+int DateTime::GetWeekDay()
+{
+    return (to_tm()->tm_wday == 0 ? 6 : to_tm()->tm_wday - 1);
 }
 

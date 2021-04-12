@@ -44,7 +44,9 @@ public:
     ~Booking();
 
     //returns the booking in a string format
-    std::string To_String();
+    std::string to_string();
+
+    int FullServiceDuration();
 
     //m_name getter
     std::string getMname() const;

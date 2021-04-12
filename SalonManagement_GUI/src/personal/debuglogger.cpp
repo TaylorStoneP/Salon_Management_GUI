@@ -11,4 +11,9 @@ Description:
 */
 CONSOLE* CONSOLE::instance = nullptr;
 
+#if TP_DEBUG_CONSOLE_TYPE==TP_WX_CONSOLE
+bool CONSOLE::created = false;
+#endif
+
+
 

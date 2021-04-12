@@ -33,6 +33,11 @@ public:
 
     void add_row(wxCommandEvent& event);
     void remove_row(wxCommandEvent& event);
+
+    void add_booking(wxCommandEvent& event);
+    void add_service(wxCommandEvent& event);
+    void add_staff(wxCommandEvent& event);
+    //void add_staff(wxCommandEvent& event);
 };
 
 class SubFrame : public wxFrame
