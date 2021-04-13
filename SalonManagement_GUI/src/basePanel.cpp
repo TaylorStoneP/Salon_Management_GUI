@@ -189,6 +189,32 @@ void sm_DateTimeBox::SetDate(wxCommandEvent& event)
 	this->Close();
 }
 
+sm_DateBox::sm_DateBox() : SubFrame(Main_Event_Window::get(), 300, 300, tp_colour_menus::menu_black), date(nullptr)
+{
+	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+	calendar = new wxCalendarCtrl(this, wxID_ANY);	wxBoxSizer* hour_sizer = new wxBoxSizer(wxHORIZONTAL);
+	finish = new sm_Button(this, &sm_DateBox::SetDate, this, wxSize(-1, 40), "Done");
+	sizer->Add(calendar, 1, wxALL | wxEXPAND);
+	sizer->Add(finish, 1, wxALL | wxEXPAND);
+	SetSizer(sizer);
+	this->Show(true);
+}
+void sm_DateBox::Extra() {
+	LOG_TRACE("Extra() not overridden");
+	for (int i = 0; i < data_handler::Get_Staff().count(); i++) {
+		UpdateStaffTimeslotsAt(i);
+	}
+}
+void sm_DateBox::SetDate(wxCommandEvent& event)
+{
+	int year = calendar->GetDate().GetYear();
+	int month = calendar->GetDate().GetMonth() + 1;
+	int day = calendar->GetDate().GetDay();
+	*date = DateTime(year, month, day, 0, 0);
+	Extra();
+	this->Close();
+}
+
 sm_ShiftBox::sm_ShiftBox(bool alternate) : SubFrame(Main_Event_Window::get(), 300, 300, tp_colour_menus::menu_black), shift(nullptr), alternate(alternate)
 {
 	sm_BasePanel* weekday_box = nullptr;
@@ -319,7 +345,10 @@ void sm_NewBooking::add_booking_to_staff(wxCommandEvent& event)
 			LOG_TRACE("New Booking Added: "+data_handler::Get_Staff()[i].getBookings().to_string());
 		}
 	}
-	UpdateStaffTimeslotsAt(0);
+	for (int i = 0; i < data_handler::Get_Staff().count(); i++)
+	{
+		UpdateStaffTimeslotsAt(i);
+	}
 	Close();
 }
 sm_NewBooking* sm_NewBooking::instance = nullptr;
@@ -477,6 +506,222 @@ sm_NewBooking::~sm_NewBooking()
 	created = false;
 }
 
+
+void sm_UpdateBooking::add_service_to_list(wxCommandEvent& event)
+{
+	services->AppendText(service->GetStringSelection() + "\n");
+	services_list.add_back(data_handler::Get_Service_By_Name((std::string)service->GetStringSelection()));
+}
+void sm_UpdateBooking::get_date_picker(wxCommandEvent& event)
+{
+	sm_UpdateBooking_DateTimeBox::sm_GetDateTime<sm_UpdateBooking_DateTimeBox>(&datetime_val);
+}
+void sm_UpdateBooking::update_booking(wxCommandEvent& event)
+{
+	for (int i = 0; i < data_handler::Get_Staff().count(); i++)
+	{
+		if ((std::string)staff->GetStringSelection() == data_handler::Get_Staff()[i].m_name)
+		{
+			Booking booking_temp((std::string)name->WXGetTextEntry()->GetValue(),
+				(std::string)phone->WXGetTextEntry()->GetValue(),
+				&data_handler::Get_Staff()[i],
+				services_list,
+				datetime_val,
+				false,
+				paid->GetValue());
+			*booking = booking_temp;
+			LOG_TRACE("Booking Updated: " + data_handler::Get_Staff()[i].getBookings().to_string());
+		}
+	}
+	for (int i = 0; i < data_handler::Get_Staff().count(); i++)
+	{
+		UpdateStaffTimeslotsAt(i);
+	}
+	Close();
+}
+sm_UpdateBooking* sm_UpdateBooking::instance = nullptr;
+bool sm_UpdateBooking::created = false;
+sm_UpdateBooking* sm_UpdateBooking::get()
+{
+	return instance;
+}
+
+sm_UpdateBooking::sm_UpdateBooking(Booking* cur_booking) : SubFrame(Main_Event_Window::get(), 500, 250, tp_colour_menus::menu_black)
+{
+	booking = cur_booking;
+	datetime_val = booking->getMtimeSlot();
+	LOG_WARN(datetime_val.To_String());
+	created = true;
+	instance = this;
+	name = nullptr;
+	phone = nullptr;
+	staff = nullptr;
+	service = nullptr;
+	services = nullptr;
+	add_service = nullptr;
+	datetime = nullptr;
+	get_date = nullptr;
+	finish = nullptr;
+	wxBoxSizer* verti_sizer = new wxBoxSizer(wxVERTICAL);
+	SetSizer(verti_sizer);
+	sm_BasePanel* panel_main_top = new sm_BasePanel(this, wxSize(-1, 50), tp_colour_misc::cyan);
+	sm_BasePanel* panel_main_bottom = new sm_BasePanel(this, wxSize(-1, -1), tp_colour_misc::grass_green);
+	sm_BasePanel* panel_main_paid = new sm_BasePanel(this, wxSize(-1, -1), tp_colour_menus::menu_white);
+	sm_BasePanel* panel_main_fin = new sm_BasePanel(this, wxSize(-1, -1), tp_colour_misc::deep_blue);
+	verti_sizer->Add(panel_main_top, 1, wxALL | wxEXPAND);
+	verti_sizer->Add(panel_main_bottom, 1, wxALL | wxEXPAND);
+	verti_sizer->Add(panel_main_paid, 1, wxALL | wxEXPAND);
+	verti_sizer->Add(panel_main_fin, 1, wxALL | wxEXPAND);
+
+	//TOP PANEL WORKINGS
+	wxBoxSizer* panel_main_top_hori_sizer = new wxBoxSizer(wxHORIZONTAL);
+	panel_main_top->SetSizer(panel_main_top_hori_sizer);
+	sm_BasePanel* panel_main_top_name_box = new sm_BasePanel(panel_main_top, wxSize(-1, -1), tp_colour_misc::cyan);
+	sm_BasePanel* panel_main_top_phone_box = new sm_BasePanel(panel_main_top, wxSize(-1, -1), tp_colour_misc::grass_green);
+	sm_BasePanel* panel_main_top_staff_box = new sm_BasePanel(panel_main_top, wxSize(-1, -1), tp_colour_misc::orange);
+	panel_main_top_hori_sizer->Add(panel_main_top_name_box, 1, wxALL | wxEXPAND);
+	panel_main_top_hori_sizer->Add(panel_main_top_phone_box, 1, wxALL | wxEXPAND);
+	panel_main_top_hori_sizer->Add(panel_main_top_staff_box, 1, wxALL | wxEXPAND);
+
+	//NAME
+	wxBoxSizer* panel_main_top_name_box_sizer = new wxBoxSizer(wxHORIZONTAL);
+	name = new wxTextCtrl(panel_main_top_name_box, wxID_ANY, booking->getMname());
+	panel_main_top_name_box->SetSizer(panel_main_top_name_box_sizer);
+	panel_main_top_name_box_sizer->Add(name, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//PHONE
+	wxBoxSizer* panel_main_top_phone_box_sizer = new wxBoxSizer(wxHORIZONTAL);
+	phone = new wxTextCtrl(panel_main_top_phone_box, wxID_ANY, booking->getMphone());
+	panel_main_top_phone_box->SetSizer(panel_main_top_phone_box_sizer);
+	panel_main_top_phone_box_sizer->Add(phone, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//STAFF
+	wxArrayString staffNames;
+
+	staffNames.Add("-Staff"); // populate the array
+	for (int i = 0; i < data_handler::Get_Staff().count(); i++)
+	{
+		staffNames.Add(data_handler::Get_Staff()[i].m_name); // populate the array
+	}
+
+	wxBoxSizer* panel_main_top_staff_box_sizer = new wxBoxSizer(wxHORIZONTAL);
+	staff = new wxChoice(panel_main_top_staff_box, wxID_ANY, wxDefaultPosition, wxDefaultSize, staffNames, 0);
+	int index=0;
+	for (int i = 0; i < data_handler::Get_Staff().count(); i++)
+	{
+		if (data_handler::Get_Staff()[i].m_name == booking->getMstaff()->m_name)
+		{
+			index = i;
+		}
+	}
+	staff->SetSelection(1+index);
+	panel_main_top_staff_box->SetSizer(panel_main_top_staff_box_sizer);
+	panel_main_top_staff_box_sizer->Add(staff, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//BOTTOM PANEL WORKINGS
+	wxBoxSizer* panel_main_bottom_hori_sizer = new wxBoxSizer(wxHORIZONTAL);
+	panel_main_bottom->SetSizer(panel_main_bottom_hori_sizer);
+	sm_BasePanel* panel_main_bottom_service_box = new sm_BasePanel(panel_main_bottom, wxSize(-1, -1), tp_colour_misc::purple);
+	sm_BasePanel* panel_main_bottom_services_list_box = new sm_BasePanel(panel_main_bottom, wxSize(-1, -1), tp_colour_misc::red);
+	sm_BasePanel* panel_main_bottom_date_box = new sm_BasePanel(panel_main_bottom, wxSize(-1, -1), tp_colour_misc::yellow);
+	panel_main_bottom_hori_sizer->Add(panel_main_bottom_service_box, 1, wxALL | wxEXPAND);
+	panel_main_bottom_hori_sizer->Add(panel_main_bottom_services_list_box, 1, wxALL | wxEXPAND);
+	panel_main_bottom_hori_sizer->Add(panel_main_bottom_date_box, 1, wxALL | wxEXPAND);
+
+	//ALLSERVICES
+	wxBoxSizer* panel_main_bottom_service_box_sizer = new wxBoxSizer(wxVERTICAL);
+	panel_main_bottom_service_box->SetSizer(panel_main_bottom_service_box_sizer);
+	sm_BasePanel* panel_main_bottom_service_box_top = new sm_BasePanel(panel_main_bottom_service_box, wxSize(-1, 50), tp_colour_misc::purple);
+	sm_BasePanel* panel_main_bottom_service_box_bottom = new sm_BasePanel(panel_main_bottom_service_box, wxSize(-1, 50), tp_colour_misc::purple);
+	panel_main_bottom_service_box_sizer->Add(panel_main_bottom_service_box_top, 1, wxALL | wxEXPAND);
+	panel_main_bottom_service_box_sizer->Add(panel_main_bottom_service_box_bottom, 1, wxALL | wxEXPAND);
+	//SERVICE
+	wxArrayString serviceNames;
+
+	serviceNames.Add("-Service"); // populate the array
+	for (int i = 0; i < data_handler::Get_Services().count(); i++)
+	{
+		serviceNames.Add(data_handler::Get_Services()[i].m_name);
+	}
+
+	wxBoxSizer* panel_main_bottom_service_box_top_sizer = new wxBoxSizer(wxHORIZONTAL);
+	service = new wxChoice(panel_main_bottom_service_box_top, wxID_ANY, wxDefaultPosition, wxDefaultSize, serviceNames, 0);
+	service->SetSelection(0);
+	panel_main_bottom_service_box_top->SetSizer(panel_main_bottom_service_box_top_sizer);
+	panel_main_bottom_service_box_top_sizer->Add(service, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//ADDSERVICE
+	wxBoxSizer* panel_main_top_service_box_bottom_sizer = new wxBoxSizer(wxHORIZONTAL);
+	add_service = new sm_Button(panel_main_bottom_service_box_bottom, &sm_UpdateBooking::add_service_to_list, this, wxDefaultSize, "Add>>");
+	panel_main_bottom_service_box_bottom->SetSizer(panel_main_top_service_box_bottom_sizer);
+	panel_main_top_service_box_bottom_sizer->Add(add_service, 1, wxALL | wxEXPAND);
+	////////////////////
+	//SERVICESLISTBOX
+	wxBoxSizer* panel_main_bottom_services_list_box_sizer = new wxBoxSizer(wxHORIZONTAL);
+	services = new wxTextCtrl(panel_main_bottom_services_list_box, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_READONLY | wxTE_MULTILINE);
+	panel_main_bottom_services_list_box->SetSizer(panel_main_bottom_services_list_box_sizer);
+	panel_main_bottom_services_list_box_sizer->Add(services, 1, wxALL | wxEXPAND);
+
+	for (int i = 0; i < booking->getMservices().count(); i++)
+	{
+		services->AppendText(booking->getMservices()[i]->m_name + "\n");
+	}
+	services_list = booking->getMservices();
+	////////////////////
+
+	//DATESTART
+	wxBoxSizer* panel_main_bottom_date_box_sizer = new wxBoxSizer(wxVERTICAL);
+	panel_main_bottom_date_box->SetSizer(panel_main_bottom_date_box_sizer);
+	sm_BasePanel* panel_main_bottom_date_box_top = new sm_BasePanel(panel_main_bottom_date_box, wxSize(-1, 50), tp_colour_misc::purple);
+	sm_BasePanel* panel_main_bottom_date_box_bottom = new sm_BasePanel(panel_main_bottom_date_box, wxSize(-1, 50), tp_colour_misc::purple);
+	panel_main_bottom_date_box_sizer->Add(panel_main_bottom_date_box_top, 1, wxALL | wxEXPAND);
+	panel_main_bottom_date_box_sizer->Add(panel_main_bottom_date_box_bottom, 1, wxALL | wxEXPAND);
+	////////////////////
+	//DATESTRING
+	wxBoxSizer* panel_main_bottom_date_box_top_sizer = new wxBoxSizer(wxHORIZONTAL);
+	datetime = new wxTextCtrl(panel_main_bottom_date_box_top, wxID_ANY, datetime_val.To_String(), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+	panel_main_bottom_date_box_top->SetSizer(panel_main_bottom_date_box_top_sizer);
+	panel_main_bottom_date_box_top_sizer->Add(datetime, 1, wxALL | wxEXPAND);
+	////////////////////
+	//DATEPICK
+	wxBoxSizer* panel_main_bottom_date_box_bottom_sizer = new wxBoxSizer(wxHORIZONTAL);
+	get_date = new sm_Button(panel_main_bottom_date_box_bottom, &sm_UpdateBooking::get_date_picker, this, wxDefaultSize, "Get Timeslot");
+	panel_main_bottom_date_box_bottom->SetSizer(panel_main_bottom_date_box_bottom_sizer);
+	panel_main_bottom_date_box_bottom_sizer->Add(get_date, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//PAID CHECK
+	wxBoxSizer* panel_main_paid_sizer = new wxBoxSizer(wxHORIZONTAL);
+	sm_BasePanel* spacer1 = new sm_BasePanel(panel_main_paid, wxSize(-1, -1), tp_colour_menus::menu_white);
+	paid = new wxCheckBox(panel_main_paid,wxID_ANY,"Paid?");
+	sm_BasePanel* spacer2 = new sm_BasePanel(panel_main_paid, wxSize(-1, -1), tp_colour_menus::menu_white);
+	panel_main_paid->SetSizer(panel_main_paid_sizer);
+	panel_main_paid_sizer->Add(spacer1, 1, wxALL | wxEXPAND);
+	panel_main_paid_sizer->Add(paid, 1, wxALL | wxEXPAND);
+	panel_main_paid_sizer->Add(spacer2, 1, wxALL | wxEXPAND);
+	paid->SetValue(booking->getMpaid());
+	////////////////////
+
+	//BOTTOM BUTTON
+	wxBoxSizer* panel_main_fin_sizer = new wxBoxSizer(wxHORIZONTAL);
+	finish = new sm_Button(panel_main_fin, &sm_UpdateBooking::update_booking, this, wxDefaultSize, "Update Booking");
+	panel_main_fin->SetSizer(panel_main_fin_sizer);
+	panel_main_fin_sizer->Add(finish, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	this->Show(true);
+}
+
+sm_UpdateBooking::~sm_UpdateBooking()
+{
+	created = false;
+}
+
+
 void sm_NewStaff::add_service_to_list(wxCommandEvent& event)
 {
 	services->AppendText(service->GetStringSelection() + "\n");
@@ -501,6 +746,8 @@ void sm_NewStaff::add_staff(wxCommandEvent& event)
 		std::string temp = "New Staff Added: " + data_handler::Get_Staff()[data_handler::Get_Staff().count() - 1].To_String();
 	)
 	LOG_TRACE(temp);
+
+	UpdateStaffTimeslotsAt(data_handler::Get_Staff().count() - 1);
 	Close();
 }
 sm_NewStaff* sm_NewStaff::instance = nullptr;
@@ -726,13 +973,13 @@ void UpdateStaffTimeslotsAt(int index)
 	day_end.setHour(24);
 	llist<Booking*> bookings = staff->GetBookingsDuring(day,day_end);
 
+	bool has_day = false;
+	working_period shift;
+	wxWindowList& windows = Main_Event_Window::get()->main_scroller->GetChildren();
+	wxWindow* panel = windows[index];
+	wxWindow* hours_box = panel->GetChildren()[1];
 	if (staff->m_regular_hours)
 	{
-		bool has_day = false;
-		working_period shift;
-		wxWindowList& windows = Main_Event_Window::get()->main_scroller->GetChildren();
-		wxWindow* panel = windows[index];
-		wxWindow* hours_box = panel->GetChildren()[1];
 		for (int i = 0; i < staff->getHours().count(); i++)
 		{
 			if (staff->getHours()[i].m_day == (week_day)day.GetWeekDay())
@@ -741,39 +988,74 @@ void UpdateStaffTimeslotsAt(int index)
 				shift = staff->getHours()[i];
 			}
 		}
-		if (has_day)
+	}
+	else
+	{
+		for (int i = 0; i < staff->getHours().count(); i++)
 		{
-			DateTime shift_start(day.getYear(),day.getMonth(),day.getDay(), shift.m_start.getHour(), shift.m_start.getMinute(),0);
-			DateTime shift_finish(day.getYear(),day.getMonth(),day.getDay(), shift.m_finish.getHour(), shift.m_finish.getMinute(),0);
-			llist<Booking*> bookings_in_shift = staff->GetBookingsDuring(shift_start, shift_finish);
-			for (int i = 7; i < 22; i++)
+			DateTime start = staff->getHours()[i].m_start;
+			start.setHour(0);
+			if (start == day)
 			{
-				if (i >= shift.m_start.getHour() && i <= shift.m_finish.getHour())
+				has_day = true;
+				shift = staff->getHours()[i];
+			}
+		}
+	}
+	if (has_day)
+	{
+		DateTime shift_start(day.getYear(),day.getMonth(),day.getDay(), shift.m_start.getHour(), shift.m_start.getMinute(),0);
+		DateTime shift_finish(day.getYear(),day.getMonth(),day.getDay(), shift.m_finish.getHour(), shift.m_finish.getMinute(),0);
+		llist<Booking*> bookings_in_shift = staff->GetBookingsDuring(shift_start, shift_finish);
+		for (int i = 7; i < 22; i++)
+		{
+			sm_Slot_Button* slot = (sm_Slot_Button*)hours_box->GetChildren()[i - 7]->GetChildren()[1];
+			if (i >= shift.m_start.getHour() && i < shift.m_finish.getHour())
+			{
+				if (bookings_in_shift.count() > 0)
 				{
 					for (int j = 0; j < bookings_in_shift.count(); j++)
 					{
-						if (i >= bookings_in_shift[j]->getMtimeSlot().getHour() && i < bookings_in_shift[j]->getMtimeSlot().getHour() + round((float)bookings_in_shift[j]->FullServiceDuration()/60.0f))
+						if (i >= bookings_in_shift[j]->getMtimeSlot().getHour() && i < bookings_in_shift[j]->getMtimeSlot().getHour() + ceil((float)bookings_in_shift[j]->FullServiceDuration() / 60.0f))
 						{
 							if (bookings_in_shift[j]->getMpaid())
 							{
-								hours_box->GetChildren()[i - 7]->GetChildren()[1]->SetBackgroundColour(tp_colour_log::trace);
+								slot->SetBackgroundColour(tp_colour_log::trace);
 							}
 							else
 							{
-								hours_box->GetChildren()[i - 7]->GetChildren()[1]->SetBackgroundColour(tp_colour_log::warning);
+								slot->SetBackgroundColour(tp_colour_log::warning);
 							}
+							;
+							slot->booking = bookings_in_shift[j];
+							break;
 						}
 						else
 						{
-							hours_box->GetChildren()[i - 7]->GetChildren()[1]->SetBackgroundColour(tp_colour_log::light);
+							slot->SetBackgroundColour(tp_colour_log::light);
+							slot->booking = nullptr;
 						}
 					}
 				}
 				else
 				{
-					hours_box->GetChildren()[i-7]->GetChildren()[1]->SetBackgroundColour(tp_colour_misc::black);
+					slot->SetBackgroundColour(tp_colour_log::light);
+					slot->booking = nullptr;
 				}
+			}
+			else
+			{
+				slot->SetBackgroundColour(tp_colour_misc::black);
+				slot->booking = nullptr;
 			}
 		}
 	}
+	else
+	{
+		for (int i = 7; i < 22; i++)
+		{
+			hours_box->GetChildren()[i - 7]->GetChildren()[1]->SetBackgroundColour(tp_colour_misc::black);
+		}
+	}
+	
 }

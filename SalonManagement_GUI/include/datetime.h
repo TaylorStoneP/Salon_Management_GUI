@@ -36,6 +36,7 @@ public:
 	bool operator<(DateTime& rhs);
 	bool operator>=(DateTime& rhs);
 	bool operator<=(DateTime& rhs);
+	bool operator==(DateTime& rhs);
 
 	time_t to_time_t();
 

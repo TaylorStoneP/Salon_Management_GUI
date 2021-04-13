@@ -93,6 +93,8 @@ public:
 	void			addHour(working_period data);
 
 	llist<Booking*> GetBookingsDuring(DateTime start, DateTime finish);
+
+	bool operator==(Staff& rhs);
 };
 
 #endif

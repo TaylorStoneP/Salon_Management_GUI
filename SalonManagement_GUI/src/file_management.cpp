@@ -234,7 +234,7 @@ Staff StaffFromDataString(std::string string, llist<service>& allServices)
 	return staff_out;
 }
 
-void ReadStaffMembers(llist<Staff>& allStaff, llist<service>& allServices)
+void ReadStaffMembers()
 {
 	std::ifstream file("staff.txt", std::ios::in);
 	if (!file.good())
@@ -242,16 +242,16 @@ void ReadStaffMembers(llist<Staff>& allStaff, llist<service>& allServices)
 	llist<std::string> staff;
 	ReadAllDel(file, staff, '\n');
 	for (int i = 0; i < staff.count(); i++) {
-		Staff indiv_staff = StaffFromDataString(staff[i], allServices);
+		Staff indiv_staff = StaffFromDataString(staff[i], data_handler::Get_Services());
 		data_handler::Add_Staff(indiv_staff);
 	}
 	file.close();
 }
 
-void SaveStaffMembers(llist<Staff>& allStaff)
+void SaveStaffMembers()
 {
 	std::ofstream file("staff.txt", std::ofstream::trunc);
-
+	llist<Staff>& allStaff = data_handler::Get_Staff();
 	std::string all_staff_string = "";
 	for (int i = 0; i < allStaff.count(); i++)
 	{
@@ -259,5 +259,43 @@ void SaveStaffMembers(llist<Staff>& allStaff)
 		all_staff_string += (i < allStaff.count() - 1) ? "\n" : "";
 	}
 	file << all_staff_string;
+	file.close();
+}
+
+void ReadServices()
+{
+	std::ifstream file("services.txt", std::ios::in);
+	std::string line;
+	std::string temp;
+	std::stringstream line_s;
+	service service;
+	while (!file.eof())
+	{
+		std::getline(file,line);
+		line_s = std::stringstream(line);
+		std::getline(line_s, temp, ',');
+		service.m_name = temp;
+		std::getline(line_s, temp, ',');
+		service.m_duration = std::stoi(temp);
+		std::getline(line_s, temp, ',');
+		service.m_cost = std::stof(temp);
+
+		data_handler::Add_Service(service);
+	}
+	file.close();
+}
+
+void SaveServices()
+{
+	std::ofstream file("services.txt", std::ofstream::trunc);
+	llist<service>& allservices = data_handler::Get_Services();
+	std::string all_services_string = "";
+	for (int i = 0; i < allservices.count(); i++)
+	{
+		service cur = allservices[i];
+		all_services_string += cur.m_name + "," + std::to_string(cur.m_duration) + "," + std::to_string(cur.m_cost);
+		all_services_string += i < allservices.count() - 1 ? "\n" : "";
+	}
+	file << all_services_string;
 	file.close();
 }

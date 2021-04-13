@@ -6,6 +6,7 @@
 #include "llist.h"
 #include "CustomSetup.h"
 #include <wx/calctrl.h>
+#include "data_handler.h"
 
 void UpdateStaffTimeslotsAt(int index);
 
@@ -39,15 +40,7 @@ public:
 	}
 };
 
-class sm_Slot_Button : public sm_Button
-{
-	const int time_slot;
-	Staff* staff;
-public:
-	sm_Slot_Button(wxWindow* window, wxSize size = wxDefaultSize, wxString text = "", int time = -1, Staff* staff=nullptr) :sm_Button(window, &sm_Slot_Button::get_booking, this, size, text), time_slot(time), staff(staff)
-	{}
-	void get_booking(wxCommandEvent& event) {}
-};
+
 
 void UpdateStaffTimeslotsAt(int index);
 
@@ -96,6 +89,24 @@ public:
 	sm_Button* finish;
 	DateTime* date;
 	sm_DateTimeBox();
+	void SetDate(wxCommandEvent& event);
+	template <typename Class>
+	static void sm_GetDateTime(DateTime* date)
+	{
+		Class* form = new Class();
+		form->date = date;
+	}
+	virtual void Extra();
+};
+
+class sm_DateBox : public SubFrame
+{
+public:
+
+	wxCalendarCtrl* calendar;
+	sm_Button* finish;
+	DateTime* date;
+	sm_DateBox();
 	void SetDate(wxCommandEvent& event);
 	template <typename Class>
 	static void sm_GetDateTime(DateTime* date)
@@ -165,6 +176,43 @@ public:
 	~sm_NewBooking();
 };
 
+class sm_UpdateBooking : public SubFrame
+{
+	class sm_UpdateBooking_DateTimeBox : public sm_DateTimeBox
+	{
+	public:
+		void Extra() override
+		{
+			get()->datetime->Clear();
+			get()->datetime->AppendText(get()->datetime_val.To_String());
+
+		}
+
+	};
+	static bool created;
+	static sm_UpdateBooking* instance;
+	DateTime datetime_val;
+	Booking* booking;
+	void add_service_to_list(wxCommandEvent& event);
+	void get_date_picker(wxCommandEvent& event);
+	void update_booking(wxCommandEvent& event);
+public:
+	static sm_UpdateBooking* get();
+	llist<service*> services_list;
+	wxTextCtrl* name;
+	wxTextCtrl* phone;
+	wxChoice* staff;
+	wxChoice* service;
+	wxTextCtrl* services;
+	sm_Button* add_service;
+	wxTextCtrl* datetime;
+	sm_Button* get_date;
+	sm_Button* finish;
+	wxCheckBox* paid;
+	sm_UpdateBooking(Booking* cur_booking);
+	~sm_UpdateBooking();
+};
+
 class sm_NewStaff : public SubFrame
 {
 	class sm_NewStaff_ShiftBox : public sm_ShiftBox
@@ -214,4 +262,21 @@ public:
 	void add_service(wxCommandEvent& event);
 };
 
+
+class sm_Slot_Button : public sm_Button
+{
+	const int time_slot;
+	Staff* staff;
+public:
+	Booking* booking;
+	sm_Slot_Button(wxWindow* window, wxSize size = wxDefaultSize, wxString text = "", int time = -1, Staff* staff = nullptr) :sm_Button(window, &sm_Slot_Button::get_booking, this, size, text), time_slot(time), staff(staff),booking(nullptr)
+	{}
+	void get_booking(wxCommandEvent& event)
+	{
+		if (booking != nullptr)
+		{
+			sm_UpdateBooking* updateB = new sm_UpdateBooking(booking);
+		}
+	}
+};
 #endif

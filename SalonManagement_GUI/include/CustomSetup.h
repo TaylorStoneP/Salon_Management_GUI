@@ -32,11 +32,15 @@ public:
     void OnEDIT_FILTERS(wxCommandEvent& event);
 
     void add_row(wxCommandEvent& event);
+    void add_row();
     void remove_row(wxCommandEvent& event);
 
     void add_booking(wxCommandEvent& event);
     void add_service(wxCommandEvent& event);
     void add_staff(wxCommandEvent& event);
+    void change_date(wxCommandEvent& event);
+    void save(wxCommandEvent& event);
+    void load(wxCommandEvent& event);
     //void add_staff(wxCommandEvent& event);
 };
 

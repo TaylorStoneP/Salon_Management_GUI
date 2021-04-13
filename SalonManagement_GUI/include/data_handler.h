@@ -11,15 +11,15 @@ class data_handler
 	llist<service> allServices;
 	llist<std::string> data_queue;
 
-	DateTime selected_date = DateTime(2021,4,14,0,0);
 
 	static data_handler* instance;
 	data_handler();
 	static data_handler* Get();
+	DateTime selected_date;
 public:
 	static llist<Staff>& Get_Staff();
 	static llist<service>& Get_Services();
-	static DateTime Get_Selected_Date();
+	static DateTime& Get_Selected_Date();
 
 	static void Add_Staff(Staff& staff_in);
 	static void Add_Service(service service_in);
@@ -27,6 +27,7 @@ public:
 	static void Add_Booking(int index_of_staff, Booking& booking_in);
 	static void Add_Queue(std::string in);
 	static std::string Pop_Queue();
+	static void Change_Date(DateTime date);
 };
 
 #endif

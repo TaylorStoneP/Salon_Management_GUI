@@ -1,10 +1,11 @@
 #include "data_handler.h"
-
+#include "CustomSetup.h"
 data_handler* data_handler::instance = nullptr;
 
 data_handler::data_handler()
 {
 	instance = this;
+	selected_date = DateTime(0, 0);
 }
 data_handler* data_handler::Get()
 {
@@ -25,7 +26,7 @@ llist<service>& data_handler::Get_Services()
 	return data_handler::Get()->allServices;
 }
 
-DateTime data_handler::Get_Selected_Date()
+DateTime& data_handler::Get_Selected_Date()
 {
 	return data_handler::Get()->selected_date;
 }
@@ -38,6 +39,7 @@ void data_handler::Add_Staff(Staff& staff_in)
 	{
 		allStaffRef[allStaffRef.count() - 1].getBookings()[k].setMstaff(&allStaffRef[allStaffRef.count() - 1]);
 	}
+	Main_Event_Window::get()->add_row();
 }
 
 void data_handler::Add_Service(service service_in)
@@ -73,4 +75,9 @@ void data_handler::Add_Queue(std::string in)
 std::string data_handler::Pop_Queue()
 {
 	return data_handler::Get()->data_queue.pop_at(0);
+}
+
+void data_handler::Change_Date(DateTime date)
+{
+	data_handler::Get()->selected_date = date;
 }

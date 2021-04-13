@@ -13,6 +13,7 @@
 #include <wx/button.h>
 #include <extraColours.h>
 #include "data_handler.h"
+#include "file_management.h"
 
 wxSize MyApp::WinSize()
 {
@@ -75,17 +76,19 @@ Main_Event_Window::Main_Event_Window(MyApp* app) : wxFrame(NULL, wxID_ANY, "Hell
     
     
     wxBoxSizer* button_sizer = new wxBoxSizer(wxVERTICAL);
-    sm_Button* button_add = new sm_Button(left,&Main_Event_Window::add_row, Main_Event_Window::get(),wxSize(-1, 40),"Add");
-    sm_Button* button_remove = new sm_Button(left,&Main_Event_Window::remove_row, Main_Event_Window::get(), wxSize(-1, 40),"Remove");
+    sm_Button* button_change_date = new sm_Button(left,&Main_Event_Window::change_date, Main_Event_Window::get(),wxSize(-1, 40),"Change Date");
     sm_Button* button_add_service = new sm_Button(left,&Main_Event_Window::add_service, Main_Event_Window::get(),wxSize(-1, 40),"Add Service");
     sm_Button* button_add_staff = new sm_Button(left,&Main_Event_Window::add_staff, Main_Event_Window::get(),wxSize(-1, 40),"Add Staff");
     sm_Button* button_add_booking = new sm_Button(left,&Main_Event_Window::add_booking, Main_Event_Window::get(),wxSize(-1, 40),"Add Booking");
+    sm_Button* button_save = new sm_Button(left,&Main_Event_Window::save, Main_Event_Window::get(),wxSize(-1, 40),"Save");
+    sm_Button* button_load = new sm_Button(left,&Main_Event_Window::load, Main_Event_Window::get(),wxSize(-1, 40),"Load");
 
-    button_sizer->Add(button_add, 1, wxALL | wxEXPAND);
-    button_sizer->Add(button_remove, 1, wxALL | wxEXPAND);
+    button_sizer->Add(button_change_date, 1, wxALL | wxEXPAND);
     button_sizer->Add(button_add_service, 1, wxALL | wxEXPAND);
     button_sizer->Add(button_add_staff, 1, wxALL | wxEXPAND);
     button_sizer->Add(button_add_booking, 1, wxALL | wxEXPAND);
+    button_sizer->Add(button_save, 1, wxALL | wxEXPAND);
+    button_sizer->Add(button_load, 1, wxALL | wxEXPAND);
     left->SetSizer(button_sizer);
 
     wxBoxSizer* scrollSize = new wxBoxSizer(wxHORIZONTAL);
@@ -110,7 +113,10 @@ Main_Event_Window::Main_Event_Window(MyApp* app) : wxFrame(NULL, wxID_ANY, "Hell
 void Main_Event_Window::add_row(wxCommandEvent& event)
 {
     main_scroller->add_widget(new sm_StaffBookingPanel(main_scroller, data_handler::Get_Staff().count() - 1));
-    //unit->Show(true);
+}
+void Main_Event_Window::add_row()
+{
+    main_scroller->add_widget(new sm_StaffBookingPanel(main_scroller, data_handler::Get_Staff().count() - 1));
 }
 void Main_Event_Window::remove_row(wxCommandEvent& event)
 {
@@ -128,6 +134,28 @@ void Main_Event_Window::add_service(wxCommandEvent& event)
 void Main_Event_Window::add_staff(wxCommandEvent& event)
 {
     sm_NewStaff* newS = new sm_NewStaff();
+}
+void Main_Event_Window::change_date(wxCommandEvent& event)
+{
+    sm_DateBox::sm_GetDateTime<sm_DateBox>(&data_handler::Get_Selected_Date());
+}
+void Main_Event_Window::save(wxCommandEvent& event)
+{
+    SaveServices();
+    SaveStaffMembers();
+}
+void Main_Event_Window::load(wxCommandEvent& event)
+{
+    ReadServices();
+    ReadStaffMembers();
+    for (int i = 0; i < data_handler::Get_Services().count(); i++)
+    {
+        LOG_WARN("Loaded Services: "+data_handler::Get_Services()[i].m_name);
+    }
+    for (int i = 0; i < data_handler::Get_Staff().count(); i++) {
+        LOG_WARN("Loaded Staff: " + data_handler::Get_Staff()[i].To_String());
+        UpdateStaffTimeslotsAt(i);
+    }
 }
 void Main_Event_Window::OnExit(wxCommandEvent& event)
 {

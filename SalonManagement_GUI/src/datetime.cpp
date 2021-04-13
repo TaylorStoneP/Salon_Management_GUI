@@ -190,6 +190,22 @@ bool DateTime::operator<=(DateTime& rhs)
     }
     return false;
 }
+bool DateTime::operator==(DateTime& rhs)
+{
+    if (m_year == rhs.getYear() &&
+        m_month == rhs.getMonth() &&
+        m_day == rhs.getDay() &&
+        m_hour == rhs.getHour() &&
+        m_minute == rhs.getMinute() &&
+        m_second == rhs.getSecond())
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 time_t DateTime::to_time_t()
 {
     tm temp;

@@ -101,6 +101,15 @@ llist<Booking*> Staff::GetBookingsDuring(DateTime start, DateTime finish)
 	return bookings_list;
 }
 
+bool Staff::operator==(Staff& rhs)
+{
+	if (m_name == rhs.m_name)
+	{
+		return true;
+	}
+	return false;
+}
+
 std::string to_string(week_day day)
 {
 	switch (day)
