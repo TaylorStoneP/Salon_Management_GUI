@@ -39,6 +39,7 @@ public:
     void add_service(wxCommandEvent& event);
     void add_staff(wxCommandEvent& event);
     void change_date(wxCommandEvent& event);
+    void view_earnings(wxCommandEvent& event);
     void save(wxCommandEvent& event);
     void load(wxCommandEvent& event);
     //void add_staff(wxCommandEvent& event);

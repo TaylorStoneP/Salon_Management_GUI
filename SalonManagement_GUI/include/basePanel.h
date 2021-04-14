@@ -279,4 +279,14 @@ public:
 		}
 	}
 };
+
+class sm_Earnings : public SubFrame
+{
+	void view_earnings(wxCommandEvent& event);
+public:
+	wxCalendarCtrl* start;
+	wxCalendarCtrl* end;
+	sm_Button* finish;
+	sm_Earnings();
+};
 #endif

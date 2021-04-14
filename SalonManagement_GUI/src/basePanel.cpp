@@ -116,9 +116,6 @@ sm_StaffBookingPanel::sm_StaffBookingPanel(wxWindow* parent, int staff_index):sm
 	wxBoxSizer* hours_box_sizer = new wxBoxSizer(wxHORIZONTAL);
 	hours_box->SetSizer(hours_box_sizer);
 
-	LOG_TRACE(std::to_string(staff_box->GetClientSize().GetWidth()));
-	LOG_TRACE(std::to_string(hours_box->GetClientSize().GetWidth()));
-	LOG_TRACE(std::to_string(parent->GetSize().GetWidth()));
 	wxSize unit_size(hours_box->GetMaxSize().x/14, unit_height);
 	wxSize sub_unit_size(-1, unit_height/2);
 	for (int i = 7; i < 22; i++)
@@ -550,7 +547,6 @@ sm_UpdateBooking::sm_UpdateBooking(Booking* cur_booking) : SubFrame(Main_Event_W
 {
 	booking = cur_booking;
 	datetime_val = booking->getMtimeSlot();
-	LOG_WARN(datetime_val.To_String());
 	created = true;
 	instance = this;
 	name = nullptr;
@@ -1058,4 +1054,144 @@ void UpdateStaffTimeslotsAt(int index)
 		}
 	}
 	
+}
+
+void sm_Earnings::view_earnings(wxCommandEvent& event)
+{
+	LOG_LINE("===========================================");
+	LOG_LINE("-----EARNINGS-----");
+	int total_paid=0;
+	int total_all=0;
+	int indiv_paid;
+	int indiv_all;
+	int indiv_contr_paid;
+	int indiv_contr_all;
+	int hours;
+	DateTime start_date(start->GetDate().GetYear(),start->GetDate().GetMonth()+1,start->GetDate().GetDay(),0,0);
+	DateTime end_date(end->GetDate().GetYear(), end->GetDate().GetMonth() + 1, end->GetDate().GetDay(), 0, 0);
+	LOG_LINE("From: "+start_date.To_String_Date());
+	LOG_LINE("To: "+end_date.To_String_Date());
+
+	for (int i = 0; i < data_handler::Get_Staff().count(); i++)
+	{
+		indiv_paid = 0;
+		indiv_all = 0;
+		indiv_contr_paid = 0;
+		indiv_contr_all = 0;
+		hours = 0;
+		Staff* staff = &data_handler::Get_Staff()[i];
+		llist<Booking*> bookings_in_period = staff->GetBookingsDuring(start_date, end_date);
+		for (int j = 0; j < bookings_in_period.count(); j++)
+		{
+			Booking* booking = bookings_in_period[j];
+			for (int k = 0; k < booking->getMservices().count(); k++)
+			{
+				indiv_all+=booking->getMservices()[k]->m_cost;
+				if (booking->getMpaid())
+				{
+					indiv_paid+=booking->getMservices()[k]->m_cost;
+				}
+			}
+		}
+		if (staff->m_fixed_fee)
+		{
+			if (staff->m_regular_hours)
+			{
+				time_t start_secs = start_date.to_time_t();
+				time_t end_secs = end_date.to_time_t();
+
+				int secs_difference = end_secs - start_secs;
+				int days_difference = secs_difference / (60 * 60 * 24);
+
+				int day = start_date.to_tm()->tm_wday==0?6: start_date.to_tm()->tm_wday-1;
+				for (int j = 0; j < days_difference; j++)
+				{
+					if (day == 7)
+						day = 0;
+					
+					for (int k = 0; k < staff->getHours().count(); k++)
+					{
+						working_period shift = staff->getHours()[k];
+						if ((int)shift.m_day == day)
+						{
+							hours += shift.m_finish.getHour() - shift.m_start.getHour();
+						}
+					}
+
+					day++;
+				}
+
+			}
+			else
+			{
+				for (int j = 0; j < staff->getHours().count(); j++)
+				{
+					working_period shift = staff->getHours()[j];
+					if (shift.m_start >= start_date && shift.m_start <= end_date)
+					{
+						hours += shift.m_finish.getHour() - shift.m_start.getHour();
+					}
+				}
+			}
+			indiv_contr_paid += hours * staff->m_rate;
+			indiv_contr_all += hours * staff->m_rate;
+		}
+		else
+		{
+			indiv_contr_paid += indiv_paid * (staff->m_rate / 100);
+			indiv_contr_all += indiv_all * (staff->m_rate / 100);
+		}
+
+		total_all += indiv_contr_all;
+		total_paid += indiv_contr_paid;
+		LOG_LINE(staff->m_name + ": ");
+		LOG_LINE("    Rate:    "+(staff->m_fixed_fee? "\u00A3" :"")+std::to_string(staff->m_rate)+ (staff->m_fixed_fee ? " per hour" : "%"));
+		if (staff->m_fixed_fee)
+		{
+			LOG_LINE("    Hours Worked: " + std::to_string(hours));
+		}
+		LOG_LINE("    Gross:    "+std::to_string(indiv_paid));
+		LOG_LINE("    Forecast: "+std::to_string(indiv_all));
+		LOG_LINE("    Gross Contribution: "+std::to_string(indiv_contr_paid));
+		LOG_LINE("    Forecast Contribution: "+std::to_string(indiv_contr_all));
+		LOG_LINE("-------------------------------------------");
+	}
+	LOG_LINE("===========================================");
+	LOG_LINE("    Gross Earnings:    "+std::to_string(total_paid));
+	LOG_LINE("    Forecast Earnings:    "+std::to_string(total_all));
+	
+	CONSOLE::Get()->SetFocus();
+
+	Close();
+}
+
+sm_Earnings::sm_Earnings() : SubFrame(Main_Event_Window::get(), 500, 250, tp_colour_menus::menu_black)
+{
+	start = nullptr;
+	end = nullptr;
+	finish = nullptr;
+	
+	wxBoxSizer* verti_sizer = new wxBoxSizer(wxVERTICAL);
+	SetSizer(verti_sizer);
+	sm_BasePanel* panel_main_top = new sm_BasePanel(this, wxSize(-1, -1), tp_colour_misc::cyan);
+	sm_BasePanel* panel_main_fin = new sm_BasePanel(this, wxSize(-1, -1), tp_colour_misc::deep_blue);
+	verti_sizer->Add(panel_main_top, 1, wxALL | wxEXPAND);
+	verti_sizer->Add(panel_main_fin, 1, wxALL | wxEXPAND);
+
+	//DATES
+	wxBoxSizer* panel_main_top_sizer = new wxBoxSizer(wxHORIZONTAL);
+	start = new wxCalendarCtrl(panel_main_top,wxID_ANY);
+	end = new wxCalendarCtrl(panel_main_top,wxID_ANY);
+	panel_main_top->SetSizer(panel_main_top_sizer);
+	panel_main_top_sizer->Add(start, 1, wxALL | wxEXPAND);
+	panel_main_top_sizer->Add(end, 1, wxALL | wxEXPAND);
+	////////////////////
+
+	//BOTTOM BUTTON
+	wxBoxSizer* panel_main_fin_sizer = new wxBoxSizer(wxHORIZONTAL);
+	finish = new sm_Button(panel_main_fin, &sm_Earnings::view_earnings, this, wxDefaultSize, "View Earnings");
+	panel_main_fin->SetSizer(panel_main_fin_sizer);
+	panel_main_fin_sizer->Add(finish, 1, wxALL | wxEXPAND);
+	////////////////////
+	this->Show(true);
 }

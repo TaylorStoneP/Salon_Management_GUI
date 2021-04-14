@@ -80,6 +80,7 @@ Main_Event_Window::Main_Event_Window(MyApp* app) : wxFrame(NULL, wxID_ANY, "Hell
     sm_Button* button_add_service = new sm_Button(left,&Main_Event_Window::add_service, Main_Event_Window::get(),wxSize(-1, 40),"Add Service");
     sm_Button* button_add_staff = new sm_Button(left,&Main_Event_Window::add_staff, Main_Event_Window::get(),wxSize(-1, 40),"Add Staff");
     sm_Button* button_add_booking = new sm_Button(left,&Main_Event_Window::add_booking, Main_Event_Window::get(),wxSize(-1, 40),"Add Booking");
+    sm_Button* button_earnings = new sm_Button(left,&Main_Event_Window::view_earnings, Main_Event_Window::get(),wxSize(-1, 40),"View Earnings");
     sm_Button* button_save = new sm_Button(left,&Main_Event_Window::save, Main_Event_Window::get(),wxSize(-1, 40),"Save");
     sm_Button* button_load = new sm_Button(left,&Main_Event_Window::load, Main_Event_Window::get(),wxSize(-1, 40),"Load");
 
@@ -87,6 +88,7 @@ Main_Event_Window::Main_Event_Window(MyApp* app) : wxFrame(NULL, wxID_ANY, "Hell
     button_sizer->Add(button_add_service, 1, wxALL | wxEXPAND);
     button_sizer->Add(button_add_staff, 1, wxALL | wxEXPAND);
     button_sizer->Add(button_add_booking, 1, wxALL | wxEXPAND);
+    button_sizer->Add(button_earnings, 1, wxALL | wxEXPAND);
     button_sizer->Add(button_save, 1, wxALL | wxEXPAND);
     button_sizer->Add(button_load, 1, wxALL | wxEXPAND);
     left->SetSizer(button_sizer);
@@ -139,6 +141,10 @@ void Main_Event_Window::change_date(wxCommandEvent& event)
 {
     sm_DateBox::sm_GetDateTime<sm_DateBox>(&data_handler::Get_Selected_Date());
 }
+void Main_Event_Window::view_earnings(wxCommandEvent& event)
+{
+    sm_Earnings* newE = new sm_Earnings();
+}
 void Main_Event_Window::save(wxCommandEvent& event)
 {
     SaveServices();
@@ -150,10 +156,10 @@ void Main_Event_Window::load(wxCommandEvent& event)
     ReadStaffMembers();
     for (int i = 0; i < data_handler::Get_Services().count(); i++)
     {
-        LOG_WARN("Loaded Services: "+data_handler::Get_Services()[i].m_name);
+        LOG_TRACE("Loaded Services: "+data_handler::Get_Services()[i].m_name);
     }
     for (int i = 0; i < data_handler::Get_Staff().count(); i++) {
-        LOG_WARN("Loaded Staff: " + data_handler::Get_Staff()[i].To_String());
+        LOG_TRACE("Loaded Staff: " + data_handler::Get_Staff()[i].To_String());
         UpdateStaffTimeslotsAt(i);
     }
 }
