@@ -156,11 +156,9 @@
     <ClCompile Include="src\data_handler.cpp" />
     <ClCompile Include="src\datetime.cpp" />
     <ClCompile Include="src\file_management.cpp" />
-    <ClCompile Include="src\personal\colourquad.cpp" />
     <ClCompile Include="src\CustomSetup.cpp" />
-    <ClCompile Include="src\personal\debuglogger.cpp" />
+    <ClCompile Include="src\debuglogger.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\personal\random.cpp" />
     <ClCompile Include="src\Staff.cpp" />
     <ClCompile Include="src\wxRelPanel.cpp" />
   </ItemGroup>
@@ -175,7 +173,6 @@
     <ClInclude Include="include\extraColours.h" />
     <ClInclude Include="include\file_management.h" />
     <ClInclude Include="include\llist.h" />
-    <ClInclude Include="include\random.h" />
     <ClInclude Include="include\Staff.h" />
     <ClInclude Include="include\wxRelPanel.h" />
   </ItemGroup>

@@ -4,11 +4,13 @@ data_handler* data_handler::instance = nullptr;
 
 data_handler::data_handler()
 {
+	//Constructor - sets up default values.
 	instance = this;
 	selected_date = DateTime(0, 0);
 }
 data_handler* data_handler::Get()
 {
+	//If data_handler hasn't been constructed yet, create one, otherwise return already existing one.
 	if (instance == nullptr)
 	{
 		instance = new data_handler();
@@ -34,11 +36,13 @@ DateTime& data_handler::Get_Selected_Date()
 void data_handler::Add_Staff(Staff& staff_in)
 {
 	llist<Staff>& allStaffRef = data_handler::Get()->Get_Staff();
-	allStaffRef.add_back(staff_in);
+	allStaffRef.add_back(staff_in);	
 	for (int k = 0; k < staff_in.getBookings().count(); k++)
 	{
+		//Adds staff member to all bookings in staff member.
 		allStaffRef[allStaffRef.count() - 1].getBookings()[k].setMstaff(&allStaffRef[allStaffRef.count() - 1]);
 	}
+	//Adds staff member to main window panel.
 	Main_Event_Window::get()->add_row();
 }
 

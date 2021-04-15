@@ -32,7 +32,7 @@ int Booking::FullServiceDuration()
     int total=0;
     for (int i = 0; i < m_services.count(); i++)
     {
-        total += m_services[i]->m_duration;
+        total += m_services[i]->m_duration; //Totals up all service durations in booking.
     }
     return total;
 }

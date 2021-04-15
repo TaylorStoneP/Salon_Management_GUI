@@ -1,19 +1,21 @@
 #pragma once
 #include "colourquad.h"
 #include "wx/colour.h"
-//change this to change colour class
+//change this to change colour class.
 #define tpCOLOURTYPE wxColour
-//change this to change whether colours are read in 0-1 format or 0-255 format
+//change this to change whether colours are read in 0-1 format or 0-255 format.
 #define tpCOLOURNUMBERTYPE 255
-
+//defines bitdepth
 #define tpBITDEPTH 32
 
+//changes code to work with either 0-255 colours of 0-1 colours.
 #if tpCOLOURNUMBERTYPE == 255
 #define tpCDIV(x) x
 #elif tpCOLOURNUMBERTYPE == 1
 #define tpCDIV(x) x/255
 #endif
 
+//changes code to work with colours that use alpha (32 bit) or colours that don't (24 bit).
 #if tpBITDEPTH == 24
 #define DEPTH_C(x)
 #elif tpBITDEPTH == 32
